@@ -8,7 +8,7 @@ package weibo
 import (
 	// "json"
 	"fmt"
-	"log"
+	// "log"
 )
 
 const (
@@ -20,10 +20,10 @@ const (
 //METHOD_MAP = { 'GET': _HTTP_GET, 'POST': _HTTP_POST, 'UPLOAD': _HTTP_UPLOAD }
 
 func httpCall(url string, method int, authorization string, kws ...interface{}) {
-	log.Logger.Println(url)
-	log.Logger.Println(int)
-	log.Logger.Println(authorization)
-	log.Logger.Println(kws)
+	fmt.Println(url)
+	fmt.Println(method)
+	fmt.Println(authorization)
+	fmt.Println(kws)
 }
 
 func HttpGet(url string, authorization string, kws ...interface{}) {

@@ -107,17 +107,6 @@
 	},
 	"buffers":
 	[
-		{
-			"contents": "{\n	\"folders\":\n	[\n		{\n			\"path\": \"/home/xio/Dropbox/XIO/Github/weibo.go\"\n		}\n	]\n}\n",
-			"file": "weibo.sublime-project",
-			"file_size": 81,
-			"file_write_time": 1361937048000000,
-			"settings":
-			{
-				"buffer_size": 81,
-				"line_ending": "Unix"
-			}
-		}
 	],
 	"build_system": "Packages/GoSublime/GoSublime.sublime-build",
 	"command_palette":
@@ -207,10 +196,15 @@
 	},
 	"file_history":
 	[
+		"/home/xio/Dropbox/XIO/Github/weibo.go/weibo/weibo.go",
+		"/home/xio/Dropbox/XIO/Github/weibo.go/push.sh",
+		"/home/xio/Dropbox/XIO/Github/weibo.go/weibo/weibo_test.go",
+		"/home/xio/.config/sublime-text-2/Packages/User/GoSublime.sublime-settings",
+		"/home/xio/.config/sublime-text-2/Packages/GoSublime/GoSublime.sublime-settings",
+		"/home/xio/Dropbox/XIO/Github/weibo.go/weibo.sublime-project",
 		"/home/xio/Dropbox/XIO/Github/weibo.go/weibo.go",
 		"/home/xio/Dropbox/XIO/Github/walle/src/walle/dev/database/tables.go",
 		"/home/xio/Dropbox/XIO/Github/weibo.go/README.md",
-		"/home/xio/Dropbox/XIO/Github/weibo.go/push.sh",
 		"/home/xio/Developer/Go/src/github.com/astaxie/beedb/beedb.go",
 		"/home/xio/Dropbox/XIO/Github/walle/src/walle/test/test.go",
 		"/home/xio/Dropbox/XIO/Github/walle/src/walle/rest/list/get.go",
@@ -218,8 +212,6 @@
 		"/home/xio/Dropbox/XIO/Github/walle/src/walle/dev/common/common.go",
 		"/home/xio/Dropbox/XIO/Github/walle/src/walle/dev/common/message.go",
 		"/home/xio/Dropbox/XIO/Github/walle/src/walle/dev/helpers/config.go",
-		"/home/xio/.config/sublime-text-2/Packages/User/GoSublime.sublime-settings",
-		"/home/xio/.config/sublime-text-2/Packages/GoSublime/GoSublime.sublime-settings",
 		"/home/xio/Dropbox/XIO/Github/walle/src/walle/dev/common/config.go",
 		"/home/xio/Dropbox/XIO/Github/walle/src/main.go",
 		"/home/xio/Dropbox/XIO/Github/walle/src/walle/walle.go",
@@ -324,6 +316,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"GS_",
 			"		\n",
 			"\"\"",
 			"\"\n",
@@ -366,35 +359,8 @@
 	"groups":
 	[
 		{
-			"selected": 0,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "weibo.sublime-project",
-					"settings":
-					{
-						"buffer_size": 81,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								81,
-								81
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JSON.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				}
 			]
 		}
 	],
@@ -437,6 +403,10 @@
 	{
 		"height": 160.0
 	},
+	"output.9o:///home/xio/.config/sublime-text-2/Packages/User":
+	{
+		"height": 160.0
+	},
 	"output.9o:///home/xio/Dropbox/XIO/Github/golearning":
 	{
 		"height": 160.0
@@ -469,6 +439,10 @@
 	{
 		"height": 160.0
 	},
+	"output.9o:///home/xio/Dropbox/XIO/Github/weibo.go/weibo":
+	{
+		"height": 160.0
+	},
 	"output.GsDoc-output-output":
 	{
 		"height": 160.0
@@ -495,6 +469,10 @@
 		"height": 500.0,
 		"selected_items":
 		[
+			[
+				"",
+				"/home/xio/Dropbox/XIO/Github/weibo.go/weibo.sublime-project"
+			]
 		],
 		"width": 380.0
 	},

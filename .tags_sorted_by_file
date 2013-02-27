@@ -1,0 +1,14 @@
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_PROGRAM_VERSION	5.8	//
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+APIClient	weibo/weibo.go	/^type APIClient struct {$/;"	d
+HttpGet	weibo/weibo.go	/^func HttpGet(url string, authorization string, kws ...interface{}) {$/;"	d
+HttpObject	weibo/weibo.go	/^type HttpObject struct {$/;"	d
+HttpPost	weibo/weibo.go	/^func HttpPost(url string, authorization string, kws ...interface{}) {$/;"	d
+HttpUpload	weibo/weibo.go	/^func HttpUpload(url string, authorization string, kws ...interface{}) {$/;"	d
+httpCall	weibo/weibo.go	/^func httpCall(url string, method int, authorization string, kws ...interface{}) {$/;"	d
+string	weibo/weibo.go	/^	response_type string$/;"	d
+TestHttpCall	weibo/weibo_test.go	/^func TestHttpCall(t *testing.T) {$/;"	d

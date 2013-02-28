@@ -5,5 +5,11 @@ import (
 )
 
 func TestHttpCall(t *testing.T) {
-	HttpUpload("111", "222", "333", "13123123123", "12312312")
+	api := NewAPIClient("1", "2", "3")
+	kws := map[string]string{
+		"a":     "1",
+		"b":     "a",
+		"count": "123",
+	}
+	api.Post.Call("statuses/public_timeline", kws)
 }

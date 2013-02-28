@@ -5,10 +5,20 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 APIClient	weibo/weibo.go	/^type APIClient struct {$/;"	d
-HttpGet	weibo/weibo.go	/^func HttpGet(url string, authorization string, kws ...interface{}) {$/;"	d
+APIError	weibo/weibo.go	/^type APIError struct {$/;"	d
+Call	weibo/weibo.go	/^func (http *HttpObject) Call(uri string, kws map[string]interface{}) {$/;"	d
+Error	weibo/weibo.go	/^func (err *APIError) Error() string {$/;"	d
 HttpObject	weibo/weibo.go	/^type HttpObject struct {$/;"	d
-HttpPost	weibo/weibo.go	/^func HttpPost(url string, authorization string, kws ...interface{}) {$/;"	d
-HttpUpload	weibo/weibo.go	/^func HttpUpload(url string, authorization string, kws ...interface{}) {$/;"	d
-httpCall	weibo/weibo.go	/^func httpCall(url string, method int, authorization string, kws ...interface{}) {$/;"	d
+NewAPIClient	weibo/weibo.go	/^func NewAPIClient(app_key, app_secret, redirect_uri string) *APIClient {$/;"	d
+api	weibo/weibo.go	/^	var api = &APIClient{$/;"	d
+boundary	weibo/weibo.go	/^	var boundary string$/;"	d
+encodeMultipart	weibo/weibo.go	/^func encodeMultipart() (params string, boundary string) {$/;"	d
+encodeParams	weibo/weibo.go	/^func encodeParams(kws map[string]interface{}) (params string) {$/;"	d
+httpCall	weibo/weibo.go	/^func httpCall(url string, method int, authorization string, kws map[string]interface{}) bool {$/;"	d
+http_body	weibo/weibo.go	/^	var http_body string$/;"	d
+http_url	weibo/weibo.go	/^	var http_url string$/;"	d
+is_expires	weibo/weibo.go	/^func (api *APIClient) is_expires() bool {$/;"	d
+params	weibo/weibo.go	/^	var params string$/;"	d
 string	weibo/weibo.go	/^	response_type string$/;"	d
+url	weibo/weibo.go	/^	var url = fmt.Sprintf("%s%s.json", http.client.api_url, uri)$/;"	d
 TestHttpCall	weibo/weibo_test.go	/^func TestHttpCall(t *testing.T) {$/;"	d

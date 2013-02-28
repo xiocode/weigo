@@ -107,6 +107,14 @@
 	},
 	"buffers":
 	[
+		{
+			"file": "weibo/weibo.go",
+			"settings":
+			{
+				"buffer_size": 1165,
+				"line_ending": "Unix"
+			}
+		}
 	],
 	"build_system": "Packages/GoSublime/GoSublime.sublime-build",
 	"command_palette":
@@ -359,8 +367,36 @@
 	"groups":
 	[
 		{
+			"selected": 0,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "weibo/weibo.go",
+					"settings":
+					{
+						"buffer_size": 1165,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								943,
+								943
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/GoSublime.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 675.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
 			]
 		}
 	],
@@ -406,6 +442,10 @@
 	"output.9o:///home/xio/.config/sublime-text-2/Packages/User":
 	{
 		"height": 160.0
+	},
+	"output.9o:///home/xio/Dropbox/XIO/Github/Golang/weibo.go/weibo":
+	{
+		"height": 247.0
 	},
 	"output.9o:///home/xio/Dropbox/XIO/Github/golearning":
 	{

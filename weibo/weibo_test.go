@@ -5,11 +5,11 @@ import (
 )
 
 func TestHttpCall(t *testing.T) {
-	api := NewAPIClient("1", "2", "3")
+	api := NewAPIClient("", "", "")
+	api.SetAccessToken("Token", 99999999999999)
 	kws := map[string]string{
-		"a":     "1",
-		"b":     "a",
-		"count": "123",
+		"uid": "1642634100",
 	}
-	api.Post.Call("statuses/public_timeline", kws)
+
+	api.Get.Call("statuses/user_timeline", kws)
 }

@@ -6,8 +6,8 @@
 package weibo
 
 import (
-	// "json"
 	"compress/gzip"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -15,6 +15,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	// "sync"
 	"time"
 	// "log"
 )
@@ -90,6 +91,7 @@ func httpCall(the_url string, method int, authorization string, kws map[string]s
 
 	body := read_body(response)
 	fmt.Println(body)
+	parse_json(body)
 	return true
 }
 
@@ -151,12 +153,28 @@ func read_body(response *http.Response) (body string) {
 
 /************************************************************
 *
-*JSON Encode *
+*Parse Json To JSON Struct *
 *
 *************************************************************/
-func json_decode() {
-
+func parse_json(body string) (result interface{}) {
+	// jsonDict := new(map[string]interface{})
+	// data, err := json.NewDecoder(strings.NewReader(body))
+	// checkError(err)
+	data_bytes := []byte(body)
+	if err := json.Unmarshal(body, &result); err == io.EOF {
+		break
+	} else if err != nil {
+		checkError(err)
+	}
+	fmt.Println(result)
+	return result
 }
+
+/************************************************************
+*
+* JSON *
+*
+*************************************************************/
 
 /************************************************************
 *

@@ -143,8 +143,6 @@ func encodeMultipart(kws map[string]interface{}) (multipartContentType string, m
 					checkError(err)
 				}
 				io.Copy(picdata, value.(*os.File))
-				fmt.Println("DEBUG")
-				fmt.Println(picdata)
 			}
 		}
 	}

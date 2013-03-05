@@ -5,6 +5,11 @@ Sina Weibo SDK For Gopher
 文档请看测试用例，哈哈！
 开玩笑，剩下的回头补上来,有问题欢迎提！
 
+##Install:
+```go
+go get -u github.com/xiocode/weigo
+```
+
 ##Useage:
 http://open.weibo.com/wiki/API%E6%96%87%E6%A1%A3_V2
 参照官方文档调用对应的方法

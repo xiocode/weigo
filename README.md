@@ -6,7 +6,8 @@ Sina Weibo SDK For Gopher
 开玩笑，剩下的回头补上来,有问题欢迎提！
 
 ##Useage:
-
+http://open.weibo.com/wiki/API%E6%96%87%E6%A1%A3_V2
+参照官方文档调用对应的方法
 ```go
 package main
 

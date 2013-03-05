@@ -168,7 +168,7 @@ func parse_json(body string) (result map[string]interface{}) {
 		checkError(err)
 	}
 	result = data.(map[string]interface{})
-	// fmt.Println(result)
+	fmt.Println(result)
 	return result
 }
 

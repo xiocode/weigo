@@ -94,7 +94,7 @@ func httpCall(the_url string, method int, authorization string, params map[strin
 
 	if error_code, ok := result["error_code"].(float64); ok {
 		fmt.Println(reflect.TypeOf(error_code))
-		fmt.Println(reflect.TypeOf(result["error"]))
+		fmt.Println(reflect.TypeOf(result["error"].(string)))
 		panic(&APIError{when: time.Now(), error_code: error_code, message: result["error"].(string)})
 	}
 

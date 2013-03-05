@@ -86,6 +86,7 @@ func httpCall(the_url string, method int, authorization string, params map[strin
 	response, err := client.Do(request) // Do Request
 	checkError(err)
 	if response.Status != "200 OK" {
+		fmt.Println(response.Status)
 		os.Exit(2)
 	}
 

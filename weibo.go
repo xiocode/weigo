@@ -16,7 +16,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"reflect"
+	// "reflect"
 	"strings"
 	// "sync"
 	"log"
@@ -93,9 +93,7 @@ func httpCall(the_url string, method int, authorization string, params map[strin
 	result = parse_json(body)
 
 	if error_code, ok := result["error_code"].(float64); ok {
-		fmt.Println(reflect.TypeOf(error_code))
-		fmt.Println(reflect.TypeOf(result["error"].(string)))
-		panic(&APIError{when: time.Now(), error_code: error_code, message: result["error"].(string)})
+		panic(&APIError{When: time.Now(), ErrorCode: error_code, Message: result["error"].(string)})
 	}
 
 	return result
@@ -185,7 +183,7 @@ func (http *HttpObject) Call(uri string, params map[string]interface{}) (result 
 	// fmt.Println(http.client, http.method)
 	var url = fmt.Sprintf("%s%s.json", http.client.api_url, uri)
 	if http.client.is_expires() {
-		panic(&APIError{when: time.Now(), error_code: 21327, message: "expired_token"})
+		panic(&APIError{When: time.Now(), ErrorCode: 21327, Message: "expired_token"})
 	}
 	result = httpCall(url, http.method, http.client.access_token, params)
 	return
@@ -247,7 +245,7 @@ func (api *APIClient) GetAuthorizeUrl(redirect_uri string, params map[string]int
 	}
 
 	if redirect == "" {
-		panic(&APIError{when: time.Now(), error_code: 21305, message: "Parameter absent: redirect_uri"})
+		panic(&APIError{When: time.Now(), ErrorCode: 21305, Message: "Parameter absent: redirect_uri"})
 	}
 
 	if response_type, ok = params["response_type"].(string); !ok {
@@ -279,7 +277,7 @@ func (api *APIClient) RequestAccessToken(code, redirect_uri string) (result map[
 		redirect = api.redirect_uri
 	}
 	if redirect == "" { // Check Redirect
-		panic(&APIError{when: time.Now(), error_code: 21305, message: "Parameter absent: redirect_uri"})
+		panic(&APIError{When: time.Now(), ErrorCode: 21305, Message: "Parameter absent: redirect_uri"})
 	}
 	var params = map[string]interface{}{
 		"client_id":     api.app_key,
@@ -294,13 +292,13 @@ func (api *APIClient) RequestAccessToken(code, redirect_uri string) (result map[
 }
 
 type APIError struct {
-	when       time.Time
-	error_code float64
-	message    string
+	When      time.Time
+	ErrorCode float64
+	Message   string
 }
 
 func (err *APIError) Error() string {
-	return fmt.Sprintf("APIError When: %v Message: %v Code: %v", err.when, err.message, err.error_code)
+	return fmt.Sprintf("APIError When: %v ErrorMessage: %v ErrorCode: %v", err.When, err.Message, err.ErrorCode)
 }
 
 func checkError(err error) {

@@ -92,8 +92,9 @@ func httpCall(the_url string, method int, authorization string, params map[strin
 	body := read_body(response)
 	result = parse_json(body)
 
+	// TODO Try Fix panic: panic during panic
 	if error_code, ok := result["error_code"].(float64); ok {
-		fmt.Println(error_code, result["error"])
+		// fmt.Println(error_code, result["error"])
 		panic(&APIError{When: time.Now(), ErrorCode: error_code, Message: result["error"].(string)})
 	}
 
@@ -120,6 +121,7 @@ func encodeMultipart(params map[string]interface{}) (multipartContentType string
 	if len(params) > 0 {
 		multipartData = new(bytes.Buffer)
 		bufferWriter := multipart.NewWriter(multipartData) // type *bytes.Buffer
+		defer bufferWriter.Close()
 		for key, value := range params {
 			switch value.(type) {
 			case string:
@@ -129,7 +131,6 @@ func encodeMultipart(params map[string]interface{}) (multipartContentType string
 			case *os.File:
 				picdata, err := bufferWriter.CreateFormFile(key, value.(*os.File).Name())
 				multipartContentType = bufferWriter.FormDataContentType()
-				defer bufferWriter.Close()
 				if err != nil {
 					checkError(err)
 				}
@@ -171,7 +172,7 @@ func parse_json(body string) (result map[string]interface{}) {
 		checkError(err)
 	}
 	result = data.(map[string]interface{})
-	fmt.Println(result)
+	// fmt.Println(result)
 	return result
 }
 
@@ -181,7 +182,6 @@ type HttpObject struct {
 }
 
 func (http *HttpObject) Call(uri string, params map[string]interface{}) (result map[string]interface{}) {
-	// fmt.Println(http.client, http.method)
 	var url = fmt.Sprintf("%s%s.json", http.client.api_url, uri)
 	if http.client.is_expires() {
 		panic(&APIError{When: time.Now(), ErrorCode: 21327, Message: "expired_token"})

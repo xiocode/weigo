@@ -298,6 +298,9 @@ type APIError struct {
 }
 
 func (err *APIError) Error() string {
+	if err == nil {
+		return "Error with unknown reason"
+	}
 	return fmt.Sprintf("APIError When: %v ErrorMessage: %v ErrorCode: %v", err.When, err.Message, err.ErrorCode)
 }
 

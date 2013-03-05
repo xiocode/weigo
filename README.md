@@ -1,4 +1,4 @@
-weibo.go
+Go Weibo SDK
 ========
 Sina Weibo SDK For Gopher
 

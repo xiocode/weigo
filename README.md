@@ -28,13 +28,14 @@ func main() {
 	api := weigo.NewAPIClient("3231340587", "702b4bcc6d56961f569943ecee1a76f4", "http://2.xweiboproxy.sinaapp.com/callback.php", "code")
 
 	///////////////////////////////////////////////授权/////////////////////////////////////////////////////////
-	// authorize_url := api.GetAuthorizeUrl("", map[string]interface{}{"force_login": 1})
-	authorize_url, err1 := api.GetAuthorizeUrl(nil)
+	// authorize_url, err1 := api.GetAuthorizeUrl("", map[string]interface{}{"force_login": 1})
+	authorize_url, err1 := api.GetAuthorizeUrl(nil) //可以传参数，如上
 	if err != nil {
 		fmt.Println(err1)
 	}
 	fmt.Println(authorize_url) // 授权地址
 	//浏览器访问授权地址，获取CODE
+
 	result, err2 := api.RequestAccessToken("15fc75c174ccc6e81f2f5060d0555d48") //使用返回的CODE请求授权
 	if err != nil {
 		fmt.Println(err2)

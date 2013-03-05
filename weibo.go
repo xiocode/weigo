@@ -85,12 +85,12 @@ func httpCall(the_url string, method int, authorization string, params map[strin
 
 	response, err := client.Do(request) // Do Request
 	checkError(err)
+	defer response.Body.Close()
 	if response.Status != "200 OK" {
 		fmt.Println(response.Status)
-		os.Exit(2)
+	} else response.Status == "400 Bad Request" {
+		panic("Bad Requests")
 	}
-
-	defer response.Body.Close()
 
 	body := read_body(response)
 	result = parse_json(body)

@@ -92,10 +92,8 @@ func httpCall(the_url string, method int, authorization string, params map[strin
 	body := read_body(response)
 	result = parse_json(body)
 
-	if error_code, ok := result["error_code"]; ok {
-		fmt.Println(reflect.TypeOf(error_code))
-		fmt.Println(error_code)
-		// panic(&APIError{when: time.Now(), error_code: error_code, message: result["error"].(string)})
+	if error_code, ok := result["error_code"].(float64); ok {
+		panic(&APIError{when: time.Now(), error_code: fmt.Sprintf("%v", error_code), message: result["error"].(string)})
 	}
 
 	return result

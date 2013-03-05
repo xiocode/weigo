@@ -301,7 +301,7 @@ func (err *APIError) Error() string {
 
 func checkError(err error) {
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 		os.Exit(1)
 	}
 }

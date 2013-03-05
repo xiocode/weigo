@@ -215,6 +215,7 @@ func NewAPIClient(app_key, app_secret, redirect_uri string) *APIClient {
 		domain:        "api.weibo.com",
 		version:       "2",
 	}
+
 	api.auth_url = fmt.Sprintf("https://%s/oauth2/", api.domain)
 	api.api_url = fmt.Sprintf("https://%s/%s/", api.domain, api.version)
 	api.Get = &HttpObject{client: api, method: HTTP_GET}
@@ -231,6 +232,9 @@ func (api *APIClient) SetAccessToken(access_token string, expires int64) *APICli
 
 func (api *APIClient) GetAuthorizeUrl(redirect_uri string, params map[string]interface{}) string {
 	var redirect string
+	var response_type string
+	var ok bool
+
 	if redirect_uri != "" {
 		redirect = redirect_uri
 	} else {
@@ -241,35 +245,37 @@ func (api *APIClient) GetAuthorizeUrl(redirect_uri string, params map[string]int
 		panic(&APIError{when: time.Now(), error_code: "21305", message: "Parameter absent: redirect_uri"})
 	}
 
-	var response_type string
-	var ok bool
 	if response_type, ok = params["response_type"].(string); !ok {
 		response_type = "code"
 	}
+
 	var url_params = map[string]interface{}{
 		"client_id":     api.app_key,
 		"response_type": response_type,
 		"redirect_uri":  redirect,
 	}
+
 	for key, value := range params {
 		url_params[key] = value
 	}
+
 	return fmt.Sprintf("%s%s?%s", api.auth_url, "authorize",
 		encodeParams(url_params))
 }
 
 func (api *APIClient) RequestAccessToken(code, redirect_uri string) (result map[string]interface{}) {
 	var redirect string
+	var the_url string
+	the_url = fmt.Sprintf("%s%s", api.auth_url, "access_token")
+
 	if redirect_uri != "" {
 		redirect = redirect_uri
 	} else {
 		redirect = api.redirect_uri
 	}
-	if redirect == "" {
+	if redirect == "" { // Check Redirect
 		panic(&APIError{when: time.Now(), error_code: "21305", message: "Parameter absent: redirect_uri"})
 	}
-	var the_url string
-	the_url = fmt.Sprintf("%s%s", api.auth_url, "access_token")
 	var params = map[string]interface{}{
 		"client_id":     api.app_key,
 		"client_secret": api.app_secret,
@@ -278,6 +284,7 @@ func (api *APIClient) RequestAccessToken(code, redirect_uri string) (result map[
 		"grant_type":    "authorization_code",
 	}
 	result = httpCall(the_url, HTTP_POST, "", params)
+
 	return result
 }
 

@@ -4,6 +4,74 @@
 		"selected_items":
 		[
 			[
+				"mu",
+				"multipart	bytes.Buffer ν"
+			],
+			[
+				"er",
+				"Error	 ƒ"
+			],
+			[
+				"HTT",
+				"HTTP_UPLOAD	 Ɩ"
+			],
+			[
+				"FI",
+				"File	struct ʈ"
+			],
+			[
+				"buf",
+				"bufferWriter	*multipart.Writer ν"
+			],
+			[
+				"u",
+				"Unix	int64 ƒ"
+			],
+			[
+				"n",
+				"Now	time.Time ƒ"
+			],
+			[
+				"s",
+				"Sprintf	string ƒ"
+			],
+			[
+				"t",
+				"TypeOf	reflect.Type ƒ"
+			],
+			[
+				"c",
+				"Close	error ƒ"
+			],
+			[
+				"re",
+				"response	interface{} ν"
+			],
+			[
+				"Re",
+				"Response	struct ʈ"
+			],
+			[
+				"in",
+				"Interface	i interface{} ƒ"
+			],
+			[
+				"H",
+				"HTTP_POST	 Ɩ"
+			],
+			[
+				"fu",
+				"func (*ReflectTest)	func (...) {...} ʂ"
+			],
+			[
+				"V",
+				"ValueOf	reflect.Value ƒ"
+			],
+			[
+				"gz",
+				"gzipReader	*gzip.Reader ν"
+			],
+			[
 				"st",
 				"st	Struct"
 			],
@@ -40,10 +108,6 @@
 				"Time	struct ʈ"
 			],
 			[
-				"H",
-				"Headers	map[string]string ν"
-			],
-			[
 				"ch",
 				"checkErr	 ƒ"
 			],
@@ -56,16 +120,8 @@
 				"GOROOT"
 			],
 			[
-				"Re",
-				"ReadString	line string, err error ƒ"
-			],
-			[
 				"func",
 				"func (*Stack)	func (...) {...} ʂ"
-			],
-			[
-				"s",
-				"strings	 package ρ"
 			],
 			[
 				"sli",
@@ -111,7 +167,23 @@
 			"file": "weibo/weibo.go",
 			"settings":
 			{
-				"buffer_size": 7306,
+				"buffer_size": 7612,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "weibo/weibo_test.go",
+			"settings":
+			{
+				"buffer_size": 1101,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "weibo/test.go",
+			"settings":
+			{
+				"buffer_size": 241,
 				"line_ending": "Unix"
 			}
 		}
@@ -204,6 +276,7 @@
 	},
 	"file_history":
 	[
+		"/home/xio/Dropbox/Developer/Go/src/golearning/reflect.go",
 		"/home/xio/.config/sublime-text-2/Packages/User/Preferences.sublime-settings",
 		"/home/xio/Dropbox/Developer/Go/src/weibo.go/weibo/weibo_test.go",
 		"/home/xio/.config/sublime-text-2/Packages/GoSublime/CHANGELOG.md",
@@ -326,6 +399,8 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"ReadCloser",
+			"	\n",
 			"GS_",
 			"		\n",
 			"\"\"",
@@ -377,15 +452,15 @@
 					"file": "weibo/weibo.go",
 					"settings":
 					{
-						"buffer_size": 7306,
+						"buffer_size": 7612,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1137,
-								1137
+								7530,
+								7530
 							]
 						],
 						"settings":
@@ -394,7 +469,61 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1350.0,
+						"translation.y": 8148.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "weibo/weibo_test.go",
+					"settings":
+					{
+						"buffer_size": 1101,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								50,
+								50
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/GoSublime.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 168.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "weibo/test.go",
+					"settings":
+					{
+						"buffer_size": 241,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								13,
+								13
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/GoSublime.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -451,7 +580,7 @@
 	},
 	"output.9o:///home/xio/Dropbox/Developer/Go/src/weibo.go/weibo":
 	{
-		"height": 142.0
+		"height": 426.0
 	},
 	"output.9o:///home/xio/Dropbox/XIO/Github/Golang/weibo.go/weibo":
 	{

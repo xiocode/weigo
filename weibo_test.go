@@ -1,7 +1,7 @@
 package weigo
 
 import (
-	"bytes"
+	// "bytes"
 	"fmt"
 	"os"
 	"reflect"
@@ -9,7 +9,7 @@ import (
 )
 
 func TestHttpCallPost(t *testing.T) {
-	api := NewAPIClient("3231340587", "702b4bcc6d56961f569943ecee1a76f4", "http://2.xweiboproxy.sinaapp.com/callback.php")
+	api := NewAPIClient("3231340587", "702b4bcc6d56961f569943ecee1a76f4", "http://2.xweiboproxy.sinaapp.com/callback.php", "code")
 	api.SetAccessToken("2.00VBqgvCZS4gWDb3940dd56eFfitSB", 1519925461)
 	// kws := map[string]string{
 	// 	"uid": "2684726573",
@@ -23,7 +23,7 @@ func TestHttpCallPost(t *testing.T) {
 
 func TestHttpCallUpload(t *testing.T) {
 
-	api := NewAPIClient("3231340587", "702b4bcc6d56961f569943ecee1a76f4", "http://2.xweiboproxy.sinaapp.com/callback.php")
+	api := NewAPIClient("3231340587", "702b4bcc6d56961f569943ecee1a76f4", "http://2.xweiboproxy.sinaapp.com/callback.php", "code")
 	api.SetAccessToken("2.00VBqgvCZS4gWDb3940dd56eFfitSB", 1519925461)
 	// kws := map[string]string{
 	// 	"uid": "2684726573",
@@ -42,9 +42,12 @@ func TestHttpCallUpload(t *testing.T) {
 }
 
 func TestHttpCallGet(t *testing.T) {
-	api := NewAPIClient("3231340587", "702b4bcc6d56961f569943ecee1a76f4", "http://2.xweiboproxy.sinaapp.com/callback.php")
+	api := NewAPIClient("3231340587", "702b4bcc6d56961f569943ecee1a76f4", "http://2.xweiboproxy.sinaapp.com/callback.php", "code")
 	api.SetAccessToken("2.00VBqgvCZS4gWDb3940dd56eFfitSB", 1519925461)
-	authorize_url := api.GetAuthorizeUrl("", map[string]interface{}{"force_login": 1})
+	// authorize_url, err := api.GetAuthorizeUrl(map[string]interface{}{"force_login": 1})
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
 	kws := map[string]interface{}{
 		"uid": "2684726573",
 	}
@@ -52,10 +55,16 @@ func TestHttpCallGet(t *testing.T) {
 }
 
 func TestHttpCallRequestToken(t *testing.T) {
-	api := NewAPIClient("3417104247", "f318153f6a80329f06c1d20842ee6e91", "http://127.0.0.1/callback")
+	api := NewAPIClient("3417104247", "f318153f6a80329f06c1d20842ee6e91", "http://127.0.0.1/callback", "code")
 	// authorize_url := api.GetAuthorizeUrl("", map[string]interface{}{"force_login": 1})
-	authorize_url := api.GetAuthorizeUrl("", nil)
+	authorize_url, err := api.GetAuthorizeUrl(nil)
+	if err != nil {
+		fmt.Println(err)
+	}
 	fmt.Println(authorize_url)
-	token := api.RequestAccessToken("15fc75c174ccc6e81f2f5060d0555d48", "http://127.0.0.1/callback")
+	token, err := api.RequestAccessToken("15fc75c174ccc6e81f2f5060d0555d48")
+	if err != nil {
+		fmt.Println(err)
+	}
 	fmt.Println(token)
 }

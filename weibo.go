@@ -93,8 +93,7 @@ func httpCall(the_url string, method int, authorization string, params map[strin
 	result = parse_json(body)
 
 	if error_code, ok := result["error_code"].(float64); ok {
-		fmt.Println(error_code)
-		// panic(&APIError{when: time.Now(), error_code: fmt.Sprintf("%v", error_code), message: result["error"].(string)})
+		panic(&APIError{when: time.Now(), error_code: error_code, message: result["error"].(string)})
 	}
 
 	return result
@@ -184,7 +183,7 @@ func (http *HttpObject) Call(uri string, params map[string]interface{}) (result 
 	// fmt.Println(http.client, http.method)
 	var url = fmt.Sprintf("%s%s.json", http.client.api_url, uri)
 	if http.client.is_expires() {
-		panic(&APIError{when: time.Now(), error_code: "21327", message: "expired_token"})
+		panic(&APIError{when: time.Now(), error_code: 21327, message: "expired_token"})
 	}
 	result = httpCall(url, http.method, http.client.access_token, params)
 	return
@@ -246,7 +245,7 @@ func (api *APIClient) GetAuthorizeUrl(redirect_uri string, params map[string]int
 	}
 
 	if redirect == "" {
-		panic(&APIError{when: time.Now(), error_code: "21305", message: "Parameter absent: redirect_uri"})
+		panic(&APIError{when: time.Now(), error_code: 21305, message: "Parameter absent: redirect_uri"})
 	}
 
 	if response_type, ok = params["response_type"].(string); !ok {
@@ -278,7 +277,7 @@ func (api *APIClient) RequestAccessToken(code, redirect_uri string) (result map[
 		redirect = api.redirect_uri
 	}
 	if redirect == "" { // Check Redirect
-		panic(&APIError{when: time.Now(), error_code: "21305", message: "Parameter absent: redirect_uri"})
+		panic(&APIError{when: time.Now(), error_code: 21305, message: "Parameter absent: redirect_uri"})
 	}
 	var params = map[string]interface{}{
 		"client_id":     api.app_key,
@@ -294,7 +293,7 @@ func (api *APIClient) RequestAccessToken(code, redirect_uri string) (result map[
 
 type APIError struct {
 	when       time.Time
-	error_code string
+	error_code float64
 	message    string
 }
 

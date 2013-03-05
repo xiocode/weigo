@@ -1,4 +1,4 @@
-package weibo
+package weigo
 
 import (
 	"bytes"

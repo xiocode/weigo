@@ -3,7 +3,7 @@
  * Date: 13-2-27
  * Version: 0.01
  */
-package weibo
+package weigo
 
 import (
 	"bytes"

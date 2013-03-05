@@ -226,14 +226,14 @@ type APIClient struct {
 	api_url       string
 	version       string
 	access_token  string
-	expires       int64
+	expires       float64
 	Get           *HttpObject
 	Post          *HttpObject
 	Upload        *HttpObject
 }
 
 func (api *APIClient) is_expires() bool {
-	return api.access_token == "" || api.expires < time.Now().Unix()
+	return api.access_token == "" || api.expires < float64(time.Now().Unix())
 }
 
 func NewAPIClient(app_key, app_secret, redirect_uri, response_type string) *APIClient {
@@ -254,7 +254,7 @@ func NewAPIClient(app_key, app_secret, redirect_uri, response_type string) *APIC
 	return api
 }
 
-func (api *APIClient) SetAccessToken(access_token string, expires int64) *APIClient {
+func (api *APIClient) SetAccessToken(access_token string, expires float64) *APIClient {
 	api.access_token = access_token
 	api.expires = expires
 	return api

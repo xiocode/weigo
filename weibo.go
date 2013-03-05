@@ -177,13 +177,14 @@ type HttpObject struct {
 	method int
 }
 
-func (http *HttpObject) Call(uri string, params map[string]interface{}) {
+func (http *HttpObject) Call(uri string, params map[string]interface{}) (result map[string]interface{}) {
 	// fmt.Println(http.client, http.method)
 	var url = fmt.Sprintf("%s%s.json", http.client.api_url, uri)
 	if http.client.is_expires() {
 		panic(&APIError{when: time.Now(), error_code: "21327", message: "expired_token"})
 	}
-	httpCall(url, http.method, http.client.access_token, params)
+	result = httpCall(url, http.method, http.client.access_token, params)
+	return
 }
 
 type APIClient struct {

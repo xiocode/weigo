@@ -1,7 +1,7 @@
 /**
  * Author: xio
  * Date: 13-2-27
- * Version: 0.01
+ * Version: 0.02
  */
 package weigo
 
@@ -17,11 +17,10 @@ import (
 	"net/url"
 	"os"
 	// "reflect"
-	"strings"
-	// "sync"
 	"errors"
 	"log"
 	"strconv"
+	"strings"
 	"time"
 )
 

@@ -68,5 +68,5 @@ func main() {
 }
 ```
 
-Weibo: http://weibo.com/xceman
+Weibo: http://weibo.com/xceman @XIOCODE
 Gmail: xiocode@gmail.com

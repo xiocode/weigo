@@ -19,7 +19,7 @@ import (
 	// "reflect"
 	"strings"
 	// "sync"
-	// "log"
+	"log"
 	"strconv"
 	"time"
 )
@@ -84,12 +84,11 @@ func httpCall(the_url string, method int, authorization string, params map[strin
 	}
 
 	response, err := client.Do(request) // Do Request
+	checkError(err)
 	if response.Status != "200 OK" {
-		// fmt.Println(response.Status)
-		//TODO Add Error Handler
 		os.Exit(2)
 	}
-	checkError(err)
+
 	defer response.Body.Close()
 
 	body := read_body(response)
@@ -301,7 +300,7 @@ func (err *APIError) Error() string {
 
 func checkError(err error) {
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 		os.Exit(1)
 	}
 }

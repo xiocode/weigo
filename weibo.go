@@ -16,7 +16,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	// "reflect"
+	"reflect"
 	"strings"
 	// "sync"
 	"log"
@@ -93,6 +93,8 @@ func httpCall(the_url string, method int, authorization string, params map[strin
 	result = parse_json(body)
 
 	if error_code, ok := result["error_code"].(float64); ok {
+		fmt.Println(reflect.TypeOf(error_code))
+		fmt.Println(reflect.TypeOf(result["error"]))
 		panic(&APIError{when: time.Now(), error_code: error_code, message: result["error"].(string)})
 	}
 

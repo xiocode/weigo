@@ -1,6 +1,6 @@
 /**
- * Author: xio
- * Date: 13-2-27
+ * Author: Tony.Shao(xiocode@gmail.com)
+ * Date: 13-02-27
  * Version: 0.02
  */
 package weigo

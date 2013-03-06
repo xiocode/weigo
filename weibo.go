@@ -32,83 +32,64 @@ const (
 
 func httpCall(the_url string, method int, authorization string, params map[string]interface{}) (result map[string]interface{}, err error) {
 	var url_params string
-	var multipart_data *bytes.Buffer //Upload Image
+	var multipart_data *bytes.Buffer //For Upload Image
 	var http_url string
-	var http_body string
+	var http_body io.Reader
 	var content_type string
-	var multipart_content_type string
 	var request *http.Request
 	var HTTP_METHOD string
-
-	if method == HTTP_UPLOAD {
-		the_url = strings.Replace(the_url, "https://api.", "https://upload.api.", 1)
-		multipart_content_type, multipart_data, err = encodeMultipart(params)
-		if err != nil {
-			return
-		}
-	} else {
-		url_params, err = encodeParams(params)
-		if err != nil {
-			return
-		}
-	}
-
-	if method == HTTP_GET {
-		http_url = fmt.Sprintf("%s?%s", the_url, url_params)
-		http_body = ""
-	} else {
-		http_url = the_url
-		http_body = url_params
-	}
 
 	switch method {
 	case HTTP_GET:
 		HTTP_METHOD = "GET"
+		url_params, err = encodeParams(params)
+		http_url = fmt.Sprintf("%s?%s", the_url, url_params)
+		http_body = nil
 	case HTTP_POST:
 		HTTP_METHOD = "POST"
+		url_params, err = encodeParams(params)
 		content_type = "application/x-www-form-urlencoded"
+		http_url = the_url
+		http_body = strings.NewReader(url_params)
 	case HTTP_UPLOAD:
 		HTTP_METHOD = "POST"
-		content_type = multipart_content_type
+		the_url = strings.Replace(the_url, "https://api.", "https://upload.api.", 1)
+		content_type, multipart_data, err = encodeMultipart(params)
+		http_url = the_url
+		http_body = multipart_data
 	}
-
-	client := new(http.Client)
-	if method == HTTP_UPLOAD {
-		request, err = http.NewRequest(HTTP_METHOD, http_url, multipart_data) //Upload
-	} else {
-		request, err = http.NewRequest(HTTP_METHOD, http_url, strings.NewReader(http_body)) //GET & POST
-	}
-
 	if err != nil {
 		return
 	}
-
-	request.Header.Add("Accept-Encoding", "gzip")
-	if method != HTTP_GET {
-		request.Header.Add("Content-Type", content_type)
+	client := new(http.Client)
+	request, err = http.NewRequest(HTTP_METHOD, http_url, http_body)
+	if err != nil {
+		return
 	}
-
+	request.Header.Add("Accept-Encoding", "gzip")
+	if method == HTTP_POST {
+		request.Header.Add("Content-Type", content_type)
+	} else if method == HTTP_UPLOAD {
+		request.Header.Add("Content-Type", content_type)
+		request.Header.Add("Content-Length", strconv.Itoa(multipart_data.Len()))
+	}
 	if authorization != "" {
 		request.Header.Add("Authorization", fmt.Sprintf("OAuth2 %s", authorization))
 	}
-
 	response, err := client.Do(request) // Do Request
 	if err != nil {
 		return
 	}
 	defer response.Body.Close()
-
 	var body string
 	body, err = read_body(response)
 	if err != nil {
 		return
 	}
-
 	result, err = parse_json(body)
 	if err != nil {
 		return
 	}
-
 	if error_code, ok := result["error_code"].(float64); ok {
 		err = &APIError{When: time.Now(), ErrorCode: int64(error_code), Message: result["error"].(string)}
 		return

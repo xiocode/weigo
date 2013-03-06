@@ -37,7 +37,7 @@ func TestHttpCallUpload(t *testing.T) {
 		fmt.Println(err)
 	}
 	update_status := map[string]interface{}{
-		"status": "Test Go Weibo SDK Upload Picture & Update Status",
+		"status": "Test Go Weibo SDK Upload Picture & Update Status with http_length",
 		"pic":    pic,
 	}
 	result, err := api.Upload.Call("statuses/upload", update_status)

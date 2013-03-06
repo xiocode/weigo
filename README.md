@@ -46,7 +46,7 @@ func main() {
 
 	///////////////////////////////////////////////方法调用/////////////////////////////////////////////////////////
 
-	api.SetAccessToken("2.00VBqgvCZS4gWDb3940dd56eFfitSB", 1519925461)
+	api.SetAccessToken("2.00VBqgvCZS4gWDb3940dd56eFfitSB", 1519925461) //expires type is int64
 	//Update Status
 	update_status := map[string]interface{}{
 		"status": "Test Go Weibo SDK 3",

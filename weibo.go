@@ -110,7 +110,7 @@ func httpCall(the_url string, method int, authorization string, params map[strin
 	}
 
 	if error_code, ok := result["error_code"].(float64); ok {
-		err = &APIError{When: time.Now(), ErrorCode: error_code, Message: result["error"].(string)}
+		err = &APIError{When: time.Now(), ErrorCode: int64(error_code), Message: result["error"].(string)}
 		return
 	}
 
@@ -226,14 +226,14 @@ type APIClient struct {
 	api_url       string
 	version       string
 	access_token  string
-	expires       float64
+	expires       int64
 	Get           *HttpObject
 	Post          *HttpObject
 	Upload        *HttpObject
 }
 
 func (api *APIClient) is_expires() bool {
-	return api.access_token == "" || api.expires < float64(time.Now().Unix())
+	return api.access_token == "" || api.expires < time.Now().Unix()
 }
 
 func NewAPIClient(app_key, app_secret, redirect_uri, response_type string) *APIClient {
@@ -254,23 +254,13 @@ func NewAPIClient(app_key, app_secret, redirect_uri, response_type string) *APIC
 	return api
 }
 
-func (api *APIClient) SetAccessToken(access_token string, expires float64) *APIClient {
+func (api *APIClient) SetAccessToken(access_token string, expires int64) *APIClient {
 	api.access_token = access_token
 	api.expires = expires
 	return api
 }
 
 func (api *APIClient) GetAuthorizeUrl(params map[string]interface{}) (authorize_url string, err error) {
-
-	if api.redirect_uri == "" {
-		err = &APIError{When: time.Now(), ErrorCode: 21305, Message: "Parameter absent: redirect_uri"}
-		return
-	}
-
-	if api.response_type == "" {
-		err = &APIError{When: time.Now(), ErrorCode: 21305, Message: "Parameter absent: response_type"}
-		return
-	}
 
 	var url_params = map[string]interface{}{
 		"client_id":     api.app_key,
@@ -294,11 +284,6 @@ func (api *APIClient) GetAuthorizeUrl(params map[string]interface{}) (authorize_
 func (api *APIClient) RequestAccessToken(code string) (result map[string]interface{}, err error) {
 	var the_url string = fmt.Sprintf("%s%s", api.auth_url, "access_token")
 
-	if api.redirect_uri == "" { // Check Redirect
-		err = &APIError{When: time.Now(), ErrorCode: 21305, Message: "Parameter absent: redirect_uri"}
-		return
-	}
-
 	var params = map[string]interface{}{
 		"client_id":     api.app_key,
 		"client_secret": api.app_secret,
@@ -316,7 +301,7 @@ func (api *APIClient) RequestAccessToken(code string) (result map[string]interfa
 
 type APIError struct {
 	When      time.Time
-	ErrorCode float64
+	ErrorCode int64
 	Message   string
 }
 

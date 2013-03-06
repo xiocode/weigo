@@ -182,6 +182,7 @@ func read_body(response *http.Response) (body string, err error) {
 	default:
 		reader = response.Body
 	}
+
 	contents, err = ioutil.ReadAll(reader)
 	if err != nil {
 		return

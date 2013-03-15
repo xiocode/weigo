@@ -14,75 +14,81 @@ go get -u github.com/xiocode/weigo
 http://open.weibo.com/wiki/API%E6%96%87%E6%A1%A3_V2
 参照官方文档调用对应的方法
 ```go
-package main
+package weigo
 
 import (
-	// "bytes"
-	"fmt"
-	"github.com/xiocode/weigo"
-	"os"
-	// "time"
+	"testing"
 )
 
-func main() {
-	api := weigo.NewAPIClient("3231340587", "702b4bcc6d56961f569943ecee1a76f4", "http://2.xweiboproxy.sinaapp.com/callback.php", "code")
+var api *APIClient
 
-	///////////////////////////////////////////////授权/////////////////////////////////////////////////////////
-	// authorize_url, err1 := api.GetAuthorizeUrl("", map[string]interface{}{"force_login": 1})
-	authorize_url, err1 := api.GetAuthorizeUrl(nil) //可以传参数，如上
-	if err != nil {
-		fmt.Println(err1)
+func init() {
+	if api == nil {
+		api = NewAPIClient("3231340587", "702b4bcc6d56961f569943ecee1a76f4", "http://2.xweiboproxy.sinaapp.com/callback.php", "code")
+		api.SetAccessToken("2.00VBqgvCZS4gWDb3940dd56eFfitSB", 1519925461)
 	}
-	fmt.Println(authorize_url) // 授权地址
-	//浏览器访问授权地址，获取CODE
+}
 
-	result, err2 := api.RequestAccessToken("15fc75c174ccc6e81f2f5060d0555d48") //使用返回的CODE请求授权
-	if err != nil {
-		fmt.Println(err2)
-	}
-	fmt.Println(result) // 授权信息
-	access_token := result["result"].(string)
-	expires := result["result"].(float64)
-
-	///////////////////////////////////////////////方法调用/////////////////////////////////////////////////////////
-
-	api.SetAccessToken("2.00VBqgvCZS4gWDb3940dd56eFfitSB", 1519925461) //expires type is int64
-	//Update Status
-	update_status := map[string]interface{}{
-		"status": "Test Go Weibo SDK 3",
-	}
-	result1, err1 := api.Post.Call("statuses/update", update_status)
-	if err1 != nil {
-		fmt.Println(err1)
-	}
-	fmt.Println(result1)
-
-	//Upload Pic & Update Status
-	pic, err := os.Open("test.jpg")
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	update_status_pic := map[string]interface{}{
-		"status": "Test Go Weibo SDK Upload Picture & Update Status 2",
-		"pic":    pic,
-	}
-	result2, err2 := api.Upload.Call("statuses/upload", update_status_pic)
-	if err2 != nil {
-		fmt.Println(err2)
-	}
-	fmt.Println(result2)
-
+func Test_GET_statuses_user_timeline(t *testing.T) {
 	kws := map[string]interface{}{
 		"uid": "2684726573",
 	}
-	result3, err3 := api.Get.Call("statuses/user_timeline", kws)
-	if err3 != nil {
-		fmt.Println(err3)
-	}
-	fmt.Println(result3)
-
+	result := new(Statuses)
+	err := api.GET_statuses_user_timeline(kws, result)
+	debugCheckError(err)
+	debugPrintln(len(*result.Statuses))
 }
+
+func Test_GET_statuses_home_timeline(t *testing.T) {
+	kws := map[string]interface{}{
+		"uid": "2684726573",
+	}
+	result := new(Statuses)
+	err := api.GET_statuses_home_timeline(kws, result)
+	debugCheckError(err)
+	debugPrintln(len(*result.Statuses))
+}
+
+func Test_GET_statuses_repost_timeline(t *testing.T) {
+	kws := map[string]interface{}{
+		"id": "3551749023600582",
+	}
+	result := new(Reposts)
+	err := api.GET_statuses_repost_timeline(kws, result)
+	debugCheckError(err)
+	debugPrintln(len(*result.Reposts))
+}
+
+func Test_POST_statuses_repost(t *testing.T) {
+	kws := map[string]interface{}{
+		"id": "3551749023600582",
+	}
+	result := new(Status)
+	err := api.POST_statuses_repost(kws, result)
+	debugCheckError(err)
+	debugPrintln(*result)
+}
+
+func Test_POST_statuses_repost(t *testing.T) {
+	kws := map[string]interface{}{
+		"status": "Testing...Testing...",
+	}
+	result := new(Status)
+	err := api.POST_statuses_update(kws, result)
+	debugCheckError(err)
+	debugPrintln(*result)
+}
+
+func Test_POST_statuses_repost(t *testing.T) {
+	kws := map[string]interface{}{
+		"id": "3556138715301190",
+	}
+	result := new(Status)
+	err := api.POST_statuses_destroy(kws, result)
+	debugCheckError(err)
+	debugPrintln(*result)
+}
+
 ```
 
 Weibo: http://weibo.com/xceman @XIOCODE

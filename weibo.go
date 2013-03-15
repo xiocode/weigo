@@ -8,7 +8,6 @@ package weigo
 import (
 	"bytes"
 	"compress/gzip"
-	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -30,7 +29,7 @@ const (
 	HTTP_UPLOAD int = 2
 )
 
-func httpCall(the_url string, method int, authorization string, params map[string]interface{}) (result map[string]interface{}, err error) {
+func httpCall(the_url string, method int, authorization string, params map[string]interface{}) (body string, err error) {
 	var url_params string
 	var multipart_data *bytes.Buffer //For Upload Image
 	var http_url string
@@ -43,7 +42,7 @@ func httpCall(the_url string, method int, authorization string, params map[strin
 	case HTTP_GET:
 		HTTP_METHOD = "GET"
 		url_params, err = encodeParams(params)
-		http_url = fmt.Sprintf("%s?%s", the_url, url_params)
+		http_url = fmt.Sprintf("%v?%v", the_url, url_params)
 		http_body = nil
 	case HTTP_POST:
 		HTTP_METHOD = "POST"
@@ -81,21 +80,13 @@ func httpCall(the_url string, method int, authorization string, params map[strin
 		return
 	}
 	defer response.Body.Close()
-	var body string
+	// debugPrintln(response.Header)
 	body, err = read_body(response)
 	if err != nil {
 		return
 	}
-	result, err = parse_json(body)
-	if err != nil {
-		return
-	}
-	if error_code, ok := result["error_code"].(float64); ok {
-		err = &APIError{When: time.Now(), ErrorCode: int64(error_code), Message: result["error"].(string)}
-		return
-	}
-
-	return result, nil
+	// debugPrintln("DEBUG" + body)
+	return body, nil
 }
 
 func encodeParams(params map[string]interface{}) (result string, err error) {
@@ -151,7 +142,6 @@ func encodeMultipart(params map[string]interface{}) (multipartContentType string
 func read_body(response *http.Response) (body string, err error) {
 	var reader io.ReadCloser
 	var contents []byte
-
 	using_gzip := response.Header.Get("Content-Encoding")
 	switch using_gzip {
 	case "gzip":
@@ -169,18 +159,8 @@ func read_body(response *http.Response) (body string, err error) {
 		return
 	}
 	body = string(contents)
+	// debugPrintln("DEBUG" + body)
 	return body, nil
-}
-
-func parse_json(body string) (result map[string]interface{}, err error) {
-	var data interface{} //Abstract Interface
-	body_bytes := []byte(body)
-	err = json.Unmarshal(body_bytes, &data)
-	if err != nil {
-		return
-	}
-	result = data.(map[string]interface{})
-	return result, nil
 }
 
 type HttpObject struct {
@@ -188,14 +168,30 @@ type HttpObject struct {
 	method int
 }
 
-func (http *HttpObject) Call(uri string, params map[string]interface{}) (result map[string]interface{}, err error) {
+func (http *HttpObject) call(uri string, params map[string]interface{}, result interface{}) (err error) {
+	var body string
 	var url = fmt.Sprintf("%s%s.json", http.client.api_url, uri)
 	if http.client.is_expires() {
 		err = &APIError{When: time.Now(), ErrorCode: 21327, Message: "expired_token"}
-		return result, err
+		return err
 	}
-	result, err = httpCall(url, http.method, http.client.access_token, params)
-	return
+	body, err = httpCall(url, http.method, http.client.access_token, params)
+	if err != nil {
+		return
+	}
+	if strings.Trim(body, " ") == "" {
+		return errors.New("Nothing Return From Http Requests!")
+	}
+	// fmt.Println(body)
+	err = JSONParser(body, result)
+	if err != nil {
+		return
+	}
+	// if error_code, ok := result["error_code"]; ok {
+	// 	err = &APIError{When: time.Now(), ErrorCode: int64(error_code), Message: result["error"]}
+	// 	return
+	// }
+	return nil
 }
 
 type APIClient struct {
@@ -209,9 +205,9 @@ type APIClient struct {
 	version       string
 	access_token  string
 	expires       int64
-	Get           *HttpObject
-	Post          *HttpObject
-	Upload        *HttpObject
+	get           *HttpObject
+	post          *HttpObject
+	upload        *HttpObject
 }
 
 func (api *APIClient) is_expires() bool {
@@ -230,9 +226,9 @@ func NewAPIClient(app_key, app_secret, redirect_uri, response_type string) *APIC
 
 	api.auth_url = fmt.Sprintf("https://%s/oauth2/", api.domain)
 	api.api_url = fmt.Sprintf("https://%s/%s/", api.domain, api.version)
-	api.Get = &HttpObject{client: api, method: HTTP_GET}
-	api.Post = &HttpObject{client: api, method: HTTP_POST}
-	api.Upload = &HttpObject{client: api, method: HTTP_UPLOAD}
+	api.get = &HttpObject{client: api, method: HTTP_GET}
+	api.post = &HttpObject{client: api, method: HTTP_POST}
+	api.upload = &HttpObject{client: api, method: HTTP_UPLOAD}
 	return api
 }
 
@@ -263,23 +259,23 @@ func (api *APIClient) GetAuthorizeUrl(params map[string]interface{}) (authorize_
 	return authorize_url, nil
 }
 
-func (api *APIClient) RequestAccessToken(code string) (result map[string]interface{}, err error) {
-	var the_url string = fmt.Sprintf("%s%s", api.auth_url, "access_token")
+// func (api *APIClient) RequestAccessToken(code string) (result map[string]interface{}, err error) {
+// 	var the_url string = fmt.Sprintf("%s%s", api.auth_url, "access_token")
 
-	var params = map[string]interface{}{
-		"client_id":     api.app_key,
-		"client_secret": api.app_secret,
-		"redirect_uri":  api.redirect_uri,
-		"code":          code,
-		"grant_type":    "authorization_code",
-	}
+// 	var params = map[string]interface{}{
+// 		"client_id":     api.app_key,
+// 		"client_secret": api.app_secret,
+// 		"redirect_uri":  api.redirect_uri,
+// 		"code":          code,
+// 		"grant_type":    "authorization_code",
+// 	}
 
-	result, err = httpCall(the_url, HTTP_POST, "", params)
-	if err != nil {
-		return
-	}
-	return result, nil
-}
+// 	result, err = httpCall(the_url, HTTP_POST, "", params)
+// 	if err != nil {
+// 		return
+// 	}
+// 	return result, nil
+// }
 
 type APIError struct {
 	When      time.Time

@@ -99,7 +99,7 @@ func encodeParams(params map[string]interface{}) (result string, err error) {
 			case int:
 				values.Add(key, strconv.Itoa(value.(int)))
 			case int64:
-				values.Add(key, strconv.Itoa(value.(int64)))
+				values.Add(key, string(value.(int64)))
 			default:
 				err = errors.New("Unsupport Data Type!")
 				return

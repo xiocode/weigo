@@ -99,11 +99,11 @@ type Comments struct {
 }
 
 type UserCounts struct {
-	id                    int64
-	followers_count       int64
-	friends_count         int64
-	statuses_count        int64
-	private_friends_count int64
+	Id                    int64 `json:"id"`
+	Followers_count       int64 `json:"followers_count"`
+	Friends_count         int64 `json:"friends_count"`
+	Statuses_count        int64 `json:"statuses_count"`
+	Private_friends_count int64 `json:"private_friends_count,omitempty"`
 }
 
 type Comment struct {
@@ -119,8 +119,8 @@ type Comment struct {
 }
 
 type UserRank struct {
-	uid  int64
-	rank int64
+	Uid  int64 `json:"uid"`
+	Rank int64 `json:"rank"`
 }
 
 //friends_timeline_ids, repost_timeline_ids
@@ -137,5 +137,19 @@ type StatusCount struct {
 	Id        int64 `json:"id"`
 	Comments  int64 `json:"comments"`
 	Reposts   int64 `json:"reposts"`
-	Attitudes int64 `json:"attitudes"`
+	Attitudes int64 `json:"attitudes,omitempty"`
+}
+
+type Friendships struct {
+	Users           *[]User `json:"users"`
+	Previous_cursor int64   `json:"previous_cursor,omitempty"`
+	Next_cursor     int64   `json:"next_cursor,omitempty"`
+	Total_number    int64   `json:"total_number,omitempty"`
+}
+
+type FriendsIDS struct {
+	Ids             *[]int64 `json:"ids"`
+	Previous_cursor int64    `json:"previous_cursor,omitempty"`
+	Next_cursor     int64    `json:"next_cursor,omitempty"`
+	Total_number    int64    `json:"total_number,omitempty"`
 }

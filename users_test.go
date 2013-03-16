@@ -1,3 +1,8 @@
+/**
+ * Author: Tony.Shao(xiocode@gmail.com)
+ * Date: 13-03-15
+ * Version: 0.02
+ */
 package weigo
 
 // import (
@@ -13,23 +18,22 @@ package weigo
 // 	}
 // }
 
-// func Test_GET_comments_show(t *testing.T) {
+// func Test_GET_users_show(t *testing.T) {
 // 	kws := map[string]interface{}{
-// 		"id": "3551749023600582",
+// 		"uid": "2684726573",
 // 	}
-// 	result := new(Comments)
-// 	err := api.GET_comments_show(kws, result)
+// 	result := new(User)
+// 	err := api.GET_users_show(kws, result)
 // 	debugCheckError(err)
-// 	debugPrintln(len(*result.Comments))
+// 	debugPrintln(*result)
 // }
 
-// func Test_POST_comments_create(t *testing.T) {
+// func Test_GET_users_counts(t *testing.T) {
 // 	kws := map[string]interface{}{
-// 		"id":      "3551749023600582",
-// 		"comment": "Testing...Testing...",
+// 		"uids": "1580095602,2684726573",
 // 	}
-// 	result := new(Comment)
-// 	err := api.POST_comments_create(kws, result)
+// 	result := new([]UserCounts)
+// 	err := api.GET_users_counts(kws, result)
 // 	debugCheckError(err)
 // 	debugPrintln(*result)
 // }

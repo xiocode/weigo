@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"compress/gzip"
 	"fmt"
+	"github.com/xiocode/toolkit/to"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
@@ -93,17 +94,18 @@ func encodeParams(params map[string]interface{}) (result string, err error) {
 	if len(params) > 0 {
 		values := url.Values{}
 		for key, value := range params {
-			switch value.(type) {
-			case string:
-				values.Add(key, value.(string))
-			case int:
-				values.Add(key, strconv.Itoa(value.(int)))
-			case int64:
-				values.Add(key, string(value.(int64)))
-			default:
-				err = errors.New("Unsupport Data Type!")
-				return
-			}
+			values.Add(key, to.String(value))
+			// switch value.(type) {
+			// case string:
+			// 	values.Add(key, value.(string))
+			// case int:
+			// 	values.Add(key, strconv.Itoa(value.(int)))
+			// case int64:
+			// 	values.Add(key, strconv.FormatInt(value.(int64), 10))
+			// default:
+			// 	err = errors.New("Unsupport Data Type!")
+			// 	return
+			// }
 		}
 		result = values.Encode()
 	}

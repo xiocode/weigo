@@ -1,27 +1,36 @@
 package weigo
 
-// import (
-// 	"testing"
-// )
+import (
+	"testing"
+	"time"
+)
 
-// var api *APIClient
+var api *APIClient
 
-// func init() {
-// 	if api == nil {
-// 		api = NewAPIClient("3231340587", "702b4bcc6d56961f569943ecee1a76f4", "http://2.xweiboproxy.sinaapp.com/callback.php", "code")
-// 		api.SetAccessToken("2.00VBqgvCZS4gWDb3940dd56eFfitSB", 1519925461)
-// 	}
-// }
+type Times struct {
+	time.Time
+}
 
-// func Test_GET_statuses_user_timeline(t *testing.T) {
-// 	kws := map[string]interface{}{
-// 		"uid": "2684726573",
-// 	}
-// 	result := new(Statuses)
-// 	err := api.GET_statuses_user_timeline(kws, result)
-// 	debugCheckError(err)
-// 	debugPrintln(len(*result.Statuses))
-// }
+func init() {
+	if api == nil {
+		api = NewAPIClient("3231340587", "702b4bcc6d56961f569943ecee1a76f4", "http://2.xweiboproxy.sinaapp.com/callback.php", "code")
+		api.SetAccessToken("2.00VBqgvCZS4gWDb3940dd56eFfitSB", 1524137445)
+	}
+}
+
+func Test_GET_statuses_user_timeline(t *testing.T) {
+	kws := map[string]interface{}{
+		"uid": "2684726573",
+	}
+	result := new(Statuses)
+	err := api.GET_statuses_user_timeline(kws, result)
+	debugCheckError(err)
+	for k, v := range *result.Statuses {
+		debugPrintln(k, v)
+	}
+
+	debugPrintln(Times.(type))
+}
 
 // func Test_GET_statuses_home_timeline(t *testing.T) {
 // 	kws := map[string]interface{}{

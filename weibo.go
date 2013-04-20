@@ -95,17 +95,6 @@ func encodeParams(params map[string]interface{}) (result string, err error) {
 		values := url.Values{}
 		for key, value := range params {
 			values.Add(key, to.String(value))
-			// switch value.(type) {
-			// case string:
-			// 	values.Add(key, value.(string))
-			// case int:
-			// 	values.Add(key, strconv.Itoa(value.(int)))
-			// case int64:
-			// 	values.Add(key, strconv.FormatInt(value.(int64), 10))
-			// default:
-			// 	err = errors.New("Unsupport Data Type!")
-			// 	return
-			// }
 		}
 		result = values.Encode()
 	}

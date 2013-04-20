@@ -3,10 +3,10 @@ Go Weibo SDK
 Sina Weibo SDK For Gopher
 
 文档请看测试用例，哈哈！
-开玩笑，剩下的回头补上来,有问题欢迎提！
 
 ##Install:
 ```go
+go get -u github.com/xiocode/toolkit
 go get -u github.com/xiocode/weigo
 ```
 

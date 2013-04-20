@@ -108,10 +108,6 @@ func encodeMultipart(params map[string]interface{}) (multipartContentType string
 		defer bufferWriter.Close()
 		for key, value := range params {
 			switch value.(type) {
-			case string:
-				bufferWriter.WriteField(key, value.(string))
-			case int:
-				bufferWriter.WriteField(key, string(value.(int)))
 			case *os.File:
 				var picdata io.Writer
 				picdata, err = bufferWriter.CreateFormFile(key, value.(*os.File).Name())
@@ -121,10 +117,7 @@ func encodeMultipart(params map[string]interface{}) (multipartContentType string
 				}
 				io.Copy(picdata, value.(*os.File))
 			default:
-				err = errors.New("Unsupport Data Type!")
-				if err != nil {
-					return "", nil, err
-				}
+				bufferWriter.WriteField(key, to.String(value))
 			}
 		}
 		return

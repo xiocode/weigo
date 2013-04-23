@@ -20,9 +20,9 @@ func init() {
 
 func Test_GET_statuses_user_timeline(t *testing.T) {
 	kws := map[string]interface{}{
-		"mid":      "yybyOssa9",
-		"type":     1,
-		"isBase62": 1,
+		"mid": "yybyOssa9",
+		// "type":     1,
+		// "isBase62": 1,
 	}
 	var result string
 	err := api.GET_statuses_queryid(kws, &result)

@@ -80,12 +80,10 @@ func httpCall(the_url string, method int, authorization string, params map[strin
 		return
 	}
 	defer response.Body.Close()
-	// debugPrintln(response.Header)
 	body, err = read_body(response)
 	if err != nil {
 		return
 	}
-	// debugPrintln("DEBUG" + body)
 	return body, nil
 }
 
@@ -166,15 +164,18 @@ func (http *HttpObject) call(uri string, params map[string]interface{}, result i
 	if strings.Trim(body, " ") == "" {
 		return errors.New("Nothing Return From Http Requests!")
 	}
-	// fmt.Println(body)
+
 	err = JSONParser(body, result)
 	if err != nil {
 		return
 	}
-	// if error_code, ok := result["error_code"]; ok {
-	// 	err = &APIError{When: time.Now(), ErrorCode: int64(error_code), Message: result["error"]}
-	// 	return
-	// }
+
+	//TODO 优化
+	result_json := result.(*map[string]interface{})
+	if error_code, ok := (*result_json)["error_code"]; ok {
+		err = &APIError{When: time.Now(), ErrorCode: to.Int64(error_code), Message: to.String((*result_json)["error"])}
+		return
+	}
 	return nil
 }
 
@@ -243,23 +244,30 @@ func (api *APIClient) GetAuthorizeUrl(params map[string]interface{}) (authorize_
 	return authorize_url, nil
 }
 
-// func (api *APIClient) RequestAccessToken(code string) (result map[string]interface{}, err error) {
-// 	var the_url string = fmt.Sprintf("%s%s", api.auth_url, "access_token")
+func (api *APIClient) RequestAccessToken(code string, result map[string]interface{}) error {
+	var the_url string = fmt.Sprintf("%s%s", api.auth_url, "access_token")
 
-// 	var params = map[string]interface{}{
-// 		"client_id":     api.app_key,
-// 		"client_secret": api.app_secret,
-// 		"redirect_uri":  api.redirect_uri,
-// 		"code":          code,
-// 		"grant_type":    "authorization_code",
-// 	}
+	var params = map[string]interface{}{
+		"client_id":     api.app_key,
+		"client_secret": api.app_secret,
+		"redirect_uri":  api.redirect_uri,
+		"code":          code,
+		"grant_type":    "authorization_code",
+	}
 
-// 	result, err = httpCall(the_url, HTTP_POST, "", params)
-// 	if err != nil {
-// 		return
-// 	}
-// 	return result, nil
-// }
+	body, err := httpCall(the_url, HTTP_POST, "", params)
+
+	if err != nil {
+		return err
+	}
+
+	err = JSONParser(body, result)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
 
 type APIError struct {
 	When      time.Time

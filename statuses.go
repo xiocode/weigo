@@ -5,6 +5,10 @@
  */
 package weigo
 
+import (
+	"github.com/xiocode/toolkit/dig"
+)
+
 /////////////////////////////////////////////// 读取接口 /////////////////////////////////////////////////
 
 //获取用户发布的微博
@@ -83,13 +87,19 @@ func (api *APIClient) GET_statuses_show_batch(params map[string]interface{}, res
 }
 
 //通过id获取mid
-func (api *APIClient) get_statuses_querymid(params map[string]interface{}, result interface{}) error {
-	return api.get.call("statuses/querymid", params, result)
+func (api *APIClient) GET_statuses_querymid(params map[string]interface{}, mid *string) error {
+	result := new(map[string]interface{})
+	err := api.get.call("statuses/querymid", params, result)
+	dig.Get(result, mid, "mid")
+	return err
 }
 
 //通过mid获取id
-func (api *APIClient) get_statuses_queryid(params map[string]interface{}, result interface{}) error {
-	return api.get.call("statuses/queryid", params, result)
+func (api *APIClient) GET_statuses_queryid(params map[string]interface{}, id *string) error {
+	result := new(map[string]interface{})
+	err := api.get.call("statuses/queryid", params, result)
+	dig.Get(result, id, "id")
+	return err
 }
 
 //批量获取指定微博的转发数评论数

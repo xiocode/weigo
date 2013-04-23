@@ -8,17 +8,16 @@ package weigo
 import (
 	"bytes"
 	"compress/gzip"
+	"errors"
 	"fmt"
 	"github.com/xiocode/toolkit/to"
 	"io"
 	"io/ioutil"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"net/url"
 	"os"
-	// "reflect"
-	"errors"
-	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -144,8 +143,7 @@ func read_body(response *http.Response) (body string, err error) {
 	if err != nil {
 		return
 	}
-	body = string(contents)
-	// debugPrintln("DEBUG" + body)
+	body = to.String(contents)
 	return body, nil
 }
 

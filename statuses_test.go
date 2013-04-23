@@ -20,16 +20,14 @@ func init() {
 
 func Test_GET_statuses_user_timeline(t *testing.T) {
 	kws := map[string]interface{}{
-		"uid": "2684726573",
+		"mid":      "yybyOssa9",
+		"type":     1,
+		"isBase62": 1,
 	}
-	result := new(Statuses)
-	err := api.GET_statuses_user_timeline(kws, result)
+	var result string
+	err := api.GET_statuses_queryid(kws, &result)
 	debugCheckError(err)
-	for k, v := range *result.Statuses {
-		debugPrintln(k, v)
-	}
-
-	debugPrintln(Times.(type))
+	debugPrintln(result)
 }
 
 // func Test_GET_statuses_home_timeline(t *testing.T) {

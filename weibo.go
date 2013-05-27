@@ -10,6 +10,7 @@ import (
 	"compress/gzip"
 	"errors"
 	"fmt"
+	"github.com/xiocode/toolkit/simplejson"
 	"github.com/xiocode/toolkit/to"
 	"io"
 	"io/ioutil"
@@ -165,18 +166,19 @@ func (http *HttpObject) call(uri string, params map[string]interface{}, result i
 		return errors.New("Nothing Return From Http Requests!")
 	}
 
+	jsonbody, err := simplejson.NewJson([]byte(body))
+	if err != nil {
+		return
+	}
+	_, ok := jsonbody.CheckGet("error_code")
+	if ok {
+		err = &APIError{When: time.Now(), ErrorCode: to.Int64(jsonbody.Get("error_code")), Message: to.String(jsonbody.Get("error"))}
+		return
+	}
 	err = JSONParser(body, result)
 	if err != nil {
 		return
 	}
-
-	// //TODO 优化
-	// result_json := result.(*map[string]interface{})
-	// if error_code, ok := (*result_json)["error_code"]; ok {
-	// 	err = &APIError{When: time.Now(), ErrorCode: to.Int64(error_code), Message: to.String((*result_json)["error"])}
-	// 	return
-	// }
-
 	return nil
 }
 

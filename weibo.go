@@ -165,7 +165,6 @@ func (http *HttpObject) call(uri string, params map[string]interface{}, result i
 	if strings.Trim(body, " ") == "" {
 		return errors.New("Nothing Return From Http Requests!")
 	}
-
 	jsonbody, err := simplejson.NewJson([]byte(body))
 	if err != nil {
 		return

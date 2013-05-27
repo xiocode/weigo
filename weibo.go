@@ -170,12 +170,13 @@ func (http *HttpObject) call(uri string, params map[string]interface{}, result i
 		return
 	}
 
-	//TODO 优化
-	result_json := result.(*map[string]interface{})
-	if error_code, ok := (*result_json)["error_code"]; ok {
-		err = &APIError{When: time.Now(), ErrorCode: to.Int64(error_code), Message: to.String((*result_json)["error"])}
-		return
-	}
+	// //TODO 优化
+	// result_json := result.(*map[string]interface{})
+	// if error_code, ok := (*result_json)["error_code"]; ok {
+	// 	err = &APIError{When: time.Now(), ErrorCode: to.Int64(error_code), Message: to.String((*result_json)["error"])}
+	// 	return
+	// }
+
 	return nil
 }
 

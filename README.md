@@ -31,6 +31,8 @@ func init() {
 	}
 }
 
+// 先获取 GetAuthorizeUrl 打开浏览器操作之后 得到 http://127.0.0.1/callback?code=198ea555a7efbbfd90caa92c86feb2b5
+// code的值是RequestAccessToken的参数
 func TestGetAuthorizeUrl(t *testing.T) {
 	api := NewAPIClient("3417104247", "f318153f6a80329f06c1d20842ee6e91", "http://127.0.0.1/callback", "code")
 	authorize_url, err := api.GetAuthorizeUrl(nil)
@@ -43,7 +45,7 @@ func TestGetAuthorizeUrl(t *testing.T) {
 func TestRequestAccessToken(t *testing.T) {
 	api := NewAPIClient("3417104247", "f318153f6a80329f06c1d20842ee6e91", "http://127.0.0.1/callback", "code")
 	var result map[string]interface{}
-	err := api.RequestAccessToken("1fdaa295b73d2a9568e284383ced5e9e", &result)
+	err := api.RequestAccessToken("1fdaa295b73d2a9568e284383ced5e9e", &result) // code
 	if err != nil {
 		fmt.Println(err)
 	}

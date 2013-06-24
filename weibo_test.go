@@ -1,12 +1,12 @@
 package weigo
 
-// import (
-// // "bytes"
-// // "fmt"
-// // "os"
-// // "reflect"
-// // "testing"
-// )
+import (
+	// "bytes"
+	"fmt"
+	// "os"
+	"reflect"
+	"testing"
+)
 
 // func TestHttpCallPost(t *testing.T) {
 // 	api := NewAPIClient("3231340587", "702b4bcc6d56961f569943ecee1a76f4", "http://2.xweiboproxy.sinaapp.com/callback.php", "code")
@@ -68,22 +68,25 @@ package weigo
 // 	fmt.Println(len(*result.Statuses))
 // }
 
-// func TestHttpCallRequestToken(t *testing.T) {
-// 	api := NewAPIClient("3417104247", "f318153f6a80329f06c1d20842ee6e91", "http://127.0.0.1/callback", "code")
-// 	// authorize_url := api.GetAuthorizeUrl("", map[string]interface{}{"force_login": 1})
-// 	// authorize_url, err := api.GetAuthorizeUrl(nil)
-// 	// if err != nil {
-// 	// 	fmt.Println(err)
-// 	// }
-// 	// fmt.Println(authorize_url)
+func TestGetAuthorizeUrl(t *testing.T) {
+	api := NewAPIClient("3417104247", "f318153f6a80329f06c1d20842ee6e91", "http://127.0.0.1/callback", "code")
+	authorize_url, err := api.GetAuthorizeUrl(nil)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(authorize_url)
+}
 
-// 	result, err := api.RequestAccessToken("d6757d781936933dd6184b6b4e5143aa")
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-// 	fmt.Println(result)
-// 	access_token := result["access_token"]
-// 	fmt.Println(reflect.TypeOf(access_token), access_token)
-// 	expires_in := result["expires_in"]
-// 	fmt.Println(reflect.TypeOf(expires_in), expires_in)
-// }
+func TestRequestAccessToken(t *testing.T) {
+	api := NewAPIClient("3417104247", "f318153f6a80329f06c1d20842ee6e91", "http://127.0.0.1/callback", "code")
+	var result map[string]interface{}
+	err := api.RequestAccessToken("1fdaa295b73d2a9568e284383ced5e9e", &result)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(result)
+	access_token := result["access_token"]
+	fmt.Println(reflect.TypeOf(access_token), access_token)
+	expires_in := result["expires_in"]
+	fmt.Println(reflect.TypeOf(expires_in), expires_in)
+}

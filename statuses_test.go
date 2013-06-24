@@ -19,6 +19,7 @@ func init() {
 }
 
 func Test_GET_statuses_user_timeline(t *testing.T) {
+	t.SkipNow()
 	kws := map[string]interface{}{
 		"mid": "yybyOssa9",
 		// "type":     1,

@@ -246,7 +246,7 @@ func (api *APIClient) GetAuthorizeUrl(params map[string]interface{}) (authorize_
 	return authorize_url, nil
 }
 
-func (api *APIClient) RequestAccessToken(code string, result map[string]interface{}) error {
+func (api *APIClient) RequestAccessToken(code string, result *map[string]interface{}) error {
 	var the_url string = fmt.Sprintf("%s%s", api.auth_url, "access_token")
 
 	var params = map[string]interface{}{

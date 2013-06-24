@@ -76,6 +76,7 @@ func Test_POST_statuses_update(t *testing.T) {
 }
 
 func Test_POST_statuses_destory(t *testing.T) {
+	t.SkipNow()
 	kws := map[string]interface{}{
 		"id": "3592749137795387",
 	}

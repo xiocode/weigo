@@ -2,7 +2,7 @@ Go Weibo SDK
 ========
 Sina Weibo SDK For Gopher
 
-[![Build Status](https://drone.io/github.com/xiocode/weigo/status.png)](https://drone.io/github.com/xiocode/weigo/latest)
+[![Build Status](https://drone.io/github.com/going/weigo/status.png)](https://drone.io/github.com/going/weigo/latest)
 
 文档请看测试用例，哈哈！
 

@@ -12,13 +12,20 @@ import (
 	"reflect"
 )
 
-func JSONParser(body string, result interface{}) (err error) {
-	body_bytes := []byte(body)
-	err = json.Unmarshal(body_bytes, result)
+func decode(body string, instance interface{}) (err error) {
+	b := []byte(body)
+	err = json.Unmarshal(b, instance)
 	if err != nil {
 		return
 	}
 	return nil
+}
+
+func checkError(err error) bool {
+	if err != nil {
+		return true
+	}
+	return false
 }
 
 func debugPrintln(message ...interface{}) {

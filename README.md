@@ -2,6 +2,8 @@ Go Weibo SDK
 ========
 Sina Weibo SDK For Gopher
 
+[![Build Status](https://drone.io/github.com/going/weigo/status.png)](https://drone.io/github.com/going/weigo/latest)
+
 文档请看测试用例，哈哈！
 
 WIP 部分高级功能啥的还没有添加静态方法。。常用的都已经添加了。。有需求请提啊！

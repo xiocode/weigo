@@ -1,8 +1,11 @@
 /**
- * Author: Tony.Shao(xiocode@gmail.com)
- * Date: 13-02-27
- * Version: 0.02
+ * Author:        Tony.Shao
+ * Email:         xiocode@gmail.com
+ * Github:        github.com/xiocode
+ * File:          weibo.go
+ * Description:   weibo api
  */
+
 package weigo
 
 import (
@@ -10,16 +13,14 @@ import (
 	"compress/gzip"
 	"errors"
 	"fmt"
-	"github.com/xiocode/toolkit/simplejson"
-	"github.com/xiocode/toolkit/to"
+	"github.com/going/toolkit/simplejson"
+	"github.com/going/toolkit/to"
 	"io"
 	"io/ioutil"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"net/url"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -58,33 +59,39 @@ func httpCall(the_url string, method int, authorization string, params map[strin
 		http_url = the_url
 		http_body = multipart_data
 	}
-	if err != nil {
-		return
+	if checkError(err) {
+		return "", err
 	}
+
 	client := new(http.Client)
 	request, err = http.NewRequest(HTTP_METHOD, http_url, http_body)
-	if err != nil {
-		return
+	if checkError(err) {
+		return "", err
 	}
 	request.Header.Add("Accept-Encoding", "gzip")
-	if method == HTTP_POST {
+
+	switch method {
+	case HTTP_POST:
 		request.Header.Add("Content-Type", content_type)
-	} else if method == HTTP_UPLOAD {
+	case HTTP_UPLOAD:
 		request.Header.Add("Content-Type", content_type)
-		request.Header.Add("Content-Length", strconv.Itoa(multipart_data.Len()))
+		request.Header.Add("Content-Length", to.String(multipart_data.Len()))
 	}
 	if authorization != "" {
 		request.Header.Add("Authorization", fmt.Sprintf("OAuth2 %s", authorization))
 	}
+
 	response, err := client.Do(request) // Do Request
-	if err != nil {
-		return
+	if checkError(err) {
+		return "", err
 	}
 	defer response.Body.Close()
+
 	body, err = read_body(response)
-	if err != nil {
-		return
+	if checkError(err) {
+		return "", err
 	}
+
 	return body, nil
 }
 
@@ -171,10 +178,12 @@ func (http *HttpObject) call(uri string, params map[string]interface{}, result i
 	}
 	_, ok := jsonbody.CheckGet("error_code")
 	if ok {
-		err = &APIError{When: time.Now(), ErrorCode: to.Int64(jsonbody.Get("error_code")), Message: to.String(jsonbody.Get("error"))}
+		errcode, _ := jsonbody.Get("error_code").Int64()
+		errmessage, _ := jsonbody.Get("error").String()
+		err = &APIError{When: time.Now(), ErrorCode: errcode, Message: errmessage}
 		return
 	}
-	err = JSONParser(body, result)
+	err = decode(body, result)
 	if err != nil {
 		return
 	}
@@ -263,12 +272,24 @@ func (api *APIClient) RequestAccessToken(code string, result *map[string]interfa
 		return err
 	}
 
-	err = JSONParser(body, result)
+	err = decode(body, result)
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (a *APIClient) GET(uri string, params map[string]interface{}, result interface{}) error {
+	return a.get.call(uri, params, result)
+}
+
+func (a *APIClient) POST(uri string, params map[string]interface{}, result interface{}) error {
+	return a.post.call(uri, params, result)
+}
+
+func (a *APIClient) UPLOAD(uri string, params map[string]interface{}, result interface{}) error {
+	return a.upload.call(uri, params, result)
 }
 
 type APIError struct {
@@ -282,8 +303,4 @@ func (err *APIError) Error() string {
 		return "Error with unknown reason"
 	}
 	return fmt.Sprintf("APIError When: %v ErrorMessage: %v ErrorCode: %v", err.When, err.Message, err.ErrorCode)
-}
-
-func checkError(err error) {
-	log.Fatal(err)
 }

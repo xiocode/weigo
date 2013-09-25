@@ -3,14 +3,14 @@
  * Email:         xiocode@gmail.com
  * Github:        github.com/xiocode
  * File:          weibo.go
- * Description:   weibo api
+ * Description:   weigo core
  */
-
 package weigo
 
 import (
 	"bytes"
 	"compress/gzip"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/going/toolkit/simplejson"
@@ -59,13 +59,13 @@ func httpCall(the_url string, method int, authorization string, params map[strin
 		http_url = the_url
 		http_body = multipart_data
 	}
-	if checkError(err) {
+	if err != nil {
 		return "", err
 	}
 
 	client := new(http.Client)
 	request, err = http.NewRequest(HTTP_METHOD, http_url, http_body)
-	if checkError(err) {
+	if err != nil {
 		return "", err
 	}
 	request.Header.Add("Accept-Encoding", "gzip")
@@ -82,75 +82,77 @@ func httpCall(the_url string, method int, authorization string, params map[strin
 	}
 
 	response, err := client.Do(request) // Do Request
-	if checkError(err) {
+	if err != nil {
 		return "", err
 	}
 	defer response.Body.Close()
 
 	body, err = read_body(response)
-	if checkError(err) {
+	if err != nil {
 		return "", err
 	}
 
 	return body, nil
 }
 
-func encodeParams(params map[string]interface{}) (result string, err error) {
+func encodeParams(params map[string]interface{}) (string, error) {
 	if len(params) > 0 {
 		values := url.Values{}
 		for key, value := range params {
 			values.Add(key, to.String(value))
 		}
-		result = values.Encode()
+		return values.Encode(), nil
 	}
-	return
+	return "", errors.New("Params Is Empty!")
 }
 
 func encodeMultipart(params map[string]interface{}) (multipartContentType string, multipartData *bytes.Buffer, err error) {
 	if len(params) > 0 {
-		multipartData = new(bytes.Buffer)
+		multipartData := new(bytes.Buffer)
 		bufferWriter := multipart.NewWriter(multipartData) // type *bytes.Buffer
 		defer bufferWriter.Close()
+		var multipartContentType string
 		for key, value := range params {
 			switch value.(type) {
 			case *os.File:
-				var picdata io.Writer
-				picdata, err = bufferWriter.CreateFormFile(key, value.(*os.File).Name())
-				multipartContentType = bufferWriter.FormDataContentType()
+				picdata, err := bufferWriter.CreateFormFile(key, value.(*os.File).Name())
 				if err != nil {
 					return "", nil, err
 				}
+				multipartContentType = bufferWriter.FormDataContentType()
 				io.Copy(picdata, value.(*os.File))
 			default:
 				bufferWriter.WriteField(key, to.String(value))
 			}
 		}
-		return
+		return multipartContentType, multipartData, nil
 	}
-	return
+	return "", nil, errors.New("Params Is Empty!")
 }
 
-func read_body(response *http.Response) (body string, err error) {
-	var reader io.ReadCloser
-	var contents []byte
-	using_gzip := response.Header.Get("Content-Encoding")
-	switch using_gzip {
+func read_body(response *http.Response) (string, error) {
+
+	switch response.Header.Get("Content-Encoding") {
 	case "gzip":
-		reader, err = gzip.NewReader(response.Body)
+		reader, err := gzip.NewReader(response.Body)
 		if err != nil {
-			return
+			return "", err
 		}
 		defer reader.Close()
+		contents, err := ioutil.ReadAll(reader)
+		if err != nil {
+			return "", err
+		}
+		return string(contents), nil
 	default:
-		reader = response.Body
+		contents, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			return "", err
+		}
+		return string(contents), nil
 	}
 
-	contents, err = ioutil.ReadAll(reader)
-	if err != nil {
-		return
-	}
-	body = to.String(contents)
-	return body, nil
+	return "", errors.New("Unknow Errors")
 }
 
 type HttpObject struct {
@@ -158,34 +160,33 @@ type HttpObject struct {
 	method int
 }
 
-func (http *HttpObject) call(uri string, params map[string]interface{}, result interface{}) (err error) {
-	var body string
-	var url = fmt.Sprintf("%s%s.json", http.client.api_url, uri)
+func (http *HttpObject) call(uri string, params map[string]interface{}, result interface{}) error {
 	if http.client.is_expires() {
-		err = &APIError{When: time.Now(), ErrorCode: 21327, Message: "expired_token"}
-		return err
+		return &APIError{When: time.Now(), ErrorCode: 21327, Message: "expired_token"}
 	}
-	body, err = httpCall(url, http.method, http.client.access_token, params)
+
+	url := fmt.Sprintf("%s%s.json", http.client.api_url, uri)
+	body, err := httpCall(url, http.method, http.client.access_token, params)
 	if err != nil {
-		return
+		return err
 	}
 	if strings.Trim(body, " ") == "" {
 		return errors.New("Nothing Return From Http Requests!")
 	}
 	jsonbody, err := simplejson.NewJson([]byte(body))
 	if err != nil {
-		return
+		return err
 	}
 	_, ok := jsonbody.CheckGet("error_code")
 	if ok {
 		errcode, _ := jsonbody.Get("error_code").Int64()
 		errmessage, _ := jsonbody.Get("error").String()
-		err = &APIError{When: time.Now(), ErrorCode: errcode, Message: errmessage}
-		return
+		err := &APIError{When: time.Now(), ErrorCode: errcode, Message: errmessage}
+		return err
 	}
-	err = decode(body, result)
-	if err != nil {
-		return
+
+	if json.Unmarshal([]byte(body), result); err != nil {
+		return err
 	}
 	return nil
 }
@@ -211,7 +212,7 @@ func (api *APIClient) is_expires() bool {
 }
 
 func NewAPIClient(app_key, app_secret, redirect_uri, response_type string) *APIClient {
-	var api = &APIClient{
+	api := &APIClient{
 		app_key:       app_key,
 		app_secret:    app_secret,
 		redirect_uri:  redirect_uri,
@@ -234,46 +235,38 @@ func (api *APIClient) SetAccessToken(access_token string, expires int64) *APICli
 	return api
 }
 
-func (api *APIClient) GetAuthorizeUrl(params map[string]interface{}) (authorize_url string, err error) {
+func (api *APIClient) GetAuthorizeUrl(params map[string]interface{}) (string, error) {
 
-	var url_params = map[string]interface{}{
+	url_params := map[string]interface{}{
 		"client_id":     api.app_key,
 		"response_type": api.response_type,
 		"redirect_uri":  api.redirect_uri,
 	}
-
 	for key, value := range params {
 		url_params[key] = value
 	}
-	var encode_params string
-	encode_params, err = encodeParams(url_params)
+	encode_params, err := encodeParams(url_params)
 	if err != nil {
-		return authorize_url, err
+		return "", err
 	}
-	authorize_url = fmt.Sprintf("%s%s?%s", api.auth_url, "authorize", encode_params)
 
-	return authorize_url, nil
+	return fmt.Sprintf("%s%s?%s", api.auth_url, "authorize", encode_params), nil
 }
 
 func (api *APIClient) RequestAccessToken(code string, result *map[string]interface{}) error {
-	var the_url string = fmt.Sprintf("%s%s", api.auth_url, "access_token")
-
-	var params = map[string]interface{}{
+	the_url := fmt.Sprintf("%s%s", api.auth_url, "access_token")
+	params := map[string]interface{}{
 		"client_id":     api.app_key,
 		"client_secret": api.app_secret,
 		"redirect_uri":  api.redirect_uri,
 		"code":          code,
 		"grant_type":    "authorization_code",
 	}
-
 	body, err := httpCall(the_url, HTTP_POST, "", params)
-
 	if err != nil {
 		return err
 	}
-
-	err = decode(body, result)
-	if err != nil {
+	if json.Unmarshal([]byte(body), result); err != nil {
 		return err
 	}
 

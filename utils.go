@@ -1,25 +1,17 @@
 /**
- * Author: Tony.Shao(xiocode@gmail.com)
- * Date: 13-02-27
- * Version: 0.02
+ * Author:        Tony.Shao
+ * Email:         xiocode@gmail.com
+ * Github:        github.com/xiocode
+ * File:          utils.go
+ * Description:   util
  */
 
 package weigo
 
 import (
-	"encoding/json"
 	"fmt"
 	"reflect"
 )
-
-func decode(body string, instance interface{}) (err error) {
-	b := []byte(body)
-	err = json.Unmarshal(b, instance)
-	if err != nil {
-		return
-	}
-	return nil
-}
 
 func checkError(err error) bool {
 	if err != nil {

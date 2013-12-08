@@ -15,8 +15,8 @@ go get -u github.com/xiocode/weigo
 ```
 
 ##Useage:
-http://open.weibo.com/wiki/API%E6%96%87%E6%A1%A3_V2
-参照官方文档调用对应的方法.目前weigo支持的功能可以参考本项目的wiki.
+http://open.weibo.com/wiki/API%E6%96%87%E6%A1%A3_V2   
+参照官方文档调用对应的方法.目前weigo支持的功能可以参考本项目的[wiki](https://github.com/violetgo/weigo/wiki).
 ```go
 package weigo
 

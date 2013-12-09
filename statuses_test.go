@@ -29,6 +29,7 @@ func Test_GET_statuses_user_timeline(t *testing.T) {
 	err := api.GET_statuses_queryid(kws, &result)
 	debugCheckError(err)
 	debugPrintln(result)
+	// fmt.Println(result)
 }
 
 func Test_GET_statuses_home_timeline(t *testing.T) {
@@ -39,7 +40,8 @@ func Test_GET_statuses_home_timeline(t *testing.T) {
 	result := new(Statuses)
 	err := api.GET_statuses_home_timeline(kws, result)
 	debugCheckError(err)
-	debugPrintln(len(*result.Statuses))
+	// debugPrintln(len(*result.Statuses))
+	// fmt.Println(result.Statuses)
 }
 
 func Test_GET_statuses_repost_timeline(t *testing.T) {

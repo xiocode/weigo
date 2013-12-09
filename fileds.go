@@ -153,3 +153,31 @@ type FriendsIDS struct {
 	Next_cursor     int64    `json:"next_cursor,omitempty"`
 	Total_number    int64    `json:"total_number,omitempty"`
 }
+
+type Config struct {
+	Comment  int64 `json:"comment"`
+	Geo      int64 `json:"geo"`
+	Message  int64 `json:"message"`
+	Realname int64 `json:"realname"`
+	Badge    int64 `json:"badge"`
+	Mobile   int64 `json:"mobile"`
+	Webim    int64 `json:"webim"`
+}
+
+type LimitStatus struct {
+	Ip_limit              int64  `json:"ip_limit"`
+	Limit_time_unit       string `json:"limit_time_unit"`
+	Remaining_ip_hits     int64  `json:"remaining_ip_hits"`
+	Remaining_user_hits   int64  `json:"remaining_user_hits"`
+	Reset_time            string `json:"reset_time"`
+	Reset_time_in_seconds int64  `json:"reset_time_in_seconds"`
+	User_limit            int64  `json:"user_limit"`
+}
+
+type UserID struct {
+	Uid int64 `json:"uid"`
+}
+
+type Email struct {
+	Email string `json:"email"`
+}

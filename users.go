@@ -12,17 +12,19 @@ func (api *APIClient) GET_users_show(params map[string]interface{}, result *User
 	return api.get.call("users/show", params, result)
 }
 
-//获取用户信息
+//通过个性域名获取用户信息
 func (api *APIClient) GET_users_domain_show(params map[string]interface{}, result *User) error {
 	return api.get.call("users/domain_show", params, result)
 }
 
-//获取用户信息
+//批量获取用户的粉丝数、关注数、微博数
 func (api *APIClient) GET_users_counts(params map[string]interface{}, result *[]UserCounts) error {
 	return api.get.call("users/counts", params, result)
 }
 
-//获取用户信息
+//废弃?
+/*
 func (api *APIClient) GET_users_show_rank(params map[string]interface{}, result *UserRank) error {
 	return api.get.call("users/show_rank", params, result)
 }
+*/

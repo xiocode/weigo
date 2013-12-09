@@ -2,6 +2,7 @@
  * Author: Tony.Shao(xiocode@gmail.com)
  * Date: 13-03-06
  * Version: 0.02
+ * modify by violetgo
  */
 package weigo
 
@@ -180,4 +181,13 @@ type UserID struct {
 
 type Email struct {
 	Email string `json:"email"`
+}
+
+type School struct {
+	Id   int64  `json:"id"`
+	Name string `json:"name"`
+}
+
+type Response1 struct {
+	Fruits []string
 }

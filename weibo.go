@@ -170,7 +170,7 @@ func (http *HttpObject) call(uri string, params map[string]interface{}, result i
 	if err != nil {
 		return err
 	}
-	// fmt.Println(body)
+	fmt.Println(body)
 	if strings.Trim(body, " ") == "" {
 		return errors.New("Nothing Return From Http Requests!")
 	}

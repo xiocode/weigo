@@ -188,6 +188,7 @@ type School struct {
 	Name string `json:"name"`
 }
 
-type Response1 struct {
-	Fruits []string
+type Tags struct {
+	Tags []map[string]interface{} `json:"tags"`
+	Id   int64                    `json:"id"`
 }

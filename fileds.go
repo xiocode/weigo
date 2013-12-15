@@ -192,3 +192,35 @@ type Tags struct {
 	Tags []map[string]interface{} `json:"tags"`
 	Id   int64                    `json:"id"`
 }
+
+type Favorite struct {
+	Status         *Status `json:"status"`
+	Tags           *Tags   `json:"tags"`
+	Favorited_time string  `json:"favorited_time"`
+}
+
+type Favorites struct {
+	Favorites    *[]Favorite `json:"favorites"`
+	Total_number int64       `json:"total_number"`
+}
+
+type FavoriteID struct {
+	StatusID       int64  `json:"status"`
+	Tags           *Tags  `json:"tags"`
+	Favorited_time string `json:"favorited_time"`
+}
+
+type FavoritesID struct {
+	Favorites    *[]FavoriteID `json:"favorites"`
+	Total_number int64         `json:"total_number"`
+}
+
+type Topic struct {
+	Statuses     *[]Status `json:"statuses"`
+	Total_number int64     `json:"total_number"`
+}
+
+type SuggestionsUser struct {
+	Users        *[]User `json:"users"`
+	Total_number int64   `json:"total_number"`
+}

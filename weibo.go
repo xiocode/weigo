@@ -3,8 +3,9 @@
  * Email:         xiocode@gmail.com
  * Github:        github.com/xiocode
  * File:          weibo.go
- * Description:   weigo core
+ * Description:   weibo core
  */
+
 package weigo
 
 import (
@@ -13,11 +14,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/going/toolkit/log"
 	"github.com/going/toolkit/simplejson"
 	"github.com/going/toolkit/to"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -31,7 +34,7 @@ const (
 	HTTP_UPLOAD int = 2
 )
 
-func httpCall(the_url string, method int, authorization string, params map[string]interface{}) (body string, err error) {
+func httpCall(the_url string, method int, authorization string, params map[string]interface{}) ([]byte, error) {
 	var url_params string
 	var multipart_data *bytes.Buffer //For Upload Image
 	var http_url string
@@ -39,7 +42,8 @@ func httpCall(the_url string, method int, authorization string, params map[strin
 	var content_type string
 	var request *http.Request
 	var HTTP_METHOD string
-
+	var err error
+	log.Println(the_url, method, params)
 	switch method {
 	case HTTP_GET:
 		HTTP_METHOD = "GET"
@@ -60,13 +64,26 @@ func httpCall(the_url string, method int, authorization string, params map[strin
 		http_body = multipart_data
 	}
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-
-	client := new(http.Client)
 	request, err = http.NewRequest(HTTP_METHOD, http_url, http_body)
 	if err != nil {
-		return "", err
+		return nil, err
+	}
+	client := &http.Client{}
+	connectTimeout := time.Duration(15 * time.Second)
+	if proxyurl, ok := params["proxy"]; ok && proxyurl != "" {
+		proxy, err := url.Parse(proxyurl.(string))
+		if err != nil {
+			return nil, err
+		}
+		client.Transport = &http.Transport{
+			Dial: func(network, addr string) (net.Conn, error) {
+				return net.DialTimeout(network, addr, connectTimeout)
+			},
+			Proxy: http.ProxyURL(proxy),
+		}
+		// request.Header.Add("X-Forwarded-For", fmt.Sprintf("%v, 127.0.0.1, 192.168.0.1", proxyurl))
 	}
 	request.Header.Add("Accept-Encoding", "gzip")
 
@@ -83,13 +100,13 @@ func httpCall(the_url string, method int, authorization string, params map[strin
 
 	response, err := client.Do(request) // Do Request
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	defer response.Body.Close()
 
-	body, err = read_body(response)
+	body, err := read_body(response)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	return body, nil
@@ -130,29 +147,29 @@ func encodeMultipart(params map[string]interface{}) (multipartContentType string
 	return "", nil, errors.New("Params Is Empty!")
 }
 
-func read_body(response *http.Response) (string, error) {
+func read_body(response *http.Response) ([]byte, error) {
 
 	switch response.Header.Get("Content-Encoding") {
 	case "gzip":
 		reader, err := gzip.NewReader(response.Body)
 		if err != nil {
-			return "", err
+			return nil, err
 		}
 		defer reader.Close()
 		contents, err := ioutil.ReadAll(reader)
 		if err != nil {
-			return "", err
+			return nil, err
 		}
-		return string(contents), nil
+		return contents, nil
 	default:
 		contents, err := ioutil.ReadAll(response.Body)
 		if err != nil {
-			return "", err
+			return nil, err
 		}
-		return string(contents), nil
+		return contents, nil
 	}
 
-	return "", errors.New("Unknow Errors")
+	return nil, errors.New("Unknow Errors")
 }
 
 type HttpObject struct {
@@ -161,20 +178,14 @@ type HttpObject struct {
 }
 
 func (http *HttpObject) call(uri string, params map[string]interface{}, result interface{}) error {
-	if http.client.is_expires() {
-		return &APIError{When: time.Now(), ErrorCode: 21327, Message: "expired_token"}
-	}
-
-	url := fmt.Sprintf("%s%s.json", http.client.api_url, uri)
-	body, err := httpCall(url, http.method, http.client.access_token, params)
+	body, err := http.raw(uri, params)
 	if err != nil {
 		return err
 	}
-	fmt.Println(body)
-	if strings.Trim(body, " ") == "" {
+	if len(body) == 0 {
 		return errors.New("Nothing Return From Http Requests!")
 	}
-	jsonbody, err := simplejson.NewJson([]byte(body))
+	jsonbody, err := simplejson.NewJson(body)
 	if err != nil {
 		return err
 	}
@@ -186,10 +197,19 @@ func (http *HttpObject) call(uri string, params map[string]interface{}, result i
 		return err
 	}
 
-	if json.Unmarshal([]byte(body), result); err != nil {
+	if json.Unmarshal(body, result); err != nil {
 		return err
 	}
 	return nil
+}
+
+func (http *HttpObject) raw(uri string, params map[string]interface{}) ([]byte, error) {
+	url := fmt.Sprintf("%s%s.json", http.client.api_url, uri)
+	body, err := httpCall(url, http.method, http.client.access_token, params)
+	if err != nil {
+		return nil, err
+	}
+	return body, nil
 }
 
 type APIClient struct {
@@ -254,7 +274,7 @@ func (api *APIClient) GetAuthorizeUrl(params map[string]interface{}) (string, er
 	return fmt.Sprintf("%s%s?%s", api.auth_url, "authorize", encode_params), nil
 }
 
-func (api *APIClient) RequestAccessToken(code string, result *map[string]interface{}) error {
+func (api *APIClient) RequestAccessToken(code string, result interface{}) error {
 	the_url := fmt.Sprintf("%s%s", api.auth_url, "access_token")
 	params := map[string]interface{}{
 		"client_id":     api.app_key,
@@ -263,15 +283,11 @@ func (api *APIClient) RequestAccessToken(code string, result *map[string]interfa
 		"code":          code,
 		"grant_type":    "authorization_code",
 	}
-	body, err := httpCall(the_url, HTTP_POST, "", params)
-	if err != nil {
-		return err
-	}
-	if json.Unmarshal([]byte(body), result); err != nil {
-		return err
-	}
+	return api.POST(the_url, params, result)
+}
 
-	return nil
+func (a *APIClient) Raw(uri string, params map[string]interface{}) ([]byte, error) {
+	return a.get.raw(uri, params)
 }
 
 func (a *APIClient) GET(uri string, params map[string]interface{}, result interface{}) error {

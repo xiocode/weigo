@@ -136,7 +136,7 @@ func (api *APIClient) POST_statuses_update(params map[string]interface{}, result
 
 //上传图片并发布一条微博
 func (api *APIClient) POST_statuses_upload(params map[string]interface{}, result *Status) error {
-	return api.post.call("statuses/upload", params, result)
+	return api.upload.call("statuses/upload", params, result)
 }
 
 //发布一条微博同时指定上传的图片或图片url ** 高级接口 **

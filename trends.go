@@ -7,15 +7,15 @@ package weigo
 
 //返回最近一小时内的热门话题
 func (api *APIClient) GET_trends_hourly(params map[string]interface{}, result interface{}) error {
-	return api.get.call("trends/hourly", params, result)
+	return api.GET("trends/hourly", params, result)
 }
 
 //返回最近一天内的热门话题
 func (api *APIClient) GET_trends_daily(params map[string]interface{}, result interface{}) error {
-	return api.get.call("trends/daily", params, result)
+	return api.GET("trends/daily", params, result)
 }
 
 //返回最近一周内的热门话题
 func (api *APIClient) GET_trends_weekly(params map[string]interface{}, result interface{}) error {
-	return api.get.call("searchtrends/weekly", params, result)
+	return api.GET("searchtrends/weekly", params, result)
 }

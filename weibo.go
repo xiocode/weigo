@@ -2,8 +2,8 @@
  * Author:        Tony.Shao
  * Email:         xiocode@gmail.com
  * Github:        github.com/xiocode
- * File:          weibo.go
- * Description:   weibo core
+ * File:          api.go
+ * Description:   weibo api proxy
  */
 
 package weigo
@@ -14,9 +14,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/going/toolkit/log"
-	"github.com/going/toolkit/simplejson"
-	"github.com/going/toolkit/to"
+	simplejson "github.com/bitly/go-simplejson"
+	log "github.com/golang/glog"
+	to "github.com/gosexy/to"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
@@ -34,7 +34,7 @@ const (
 	HTTP_UPLOAD int = 2
 )
 
-func httpCall(the_url string, method int, authorization string, params map[string]interface{}) ([]byte, error) {
+func call(client *http.Client, the_url string, method int, authorization string, params map[string]interface{}) ([]byte, error) {
 	var url_params string
 	var multipart_data *bytes.Buffer //For Upload Image
 	var http_url string
@@ -43,7 +43,7 @@ func httpCall(the_url string, method int, authorization string, params map[strin
 	var request *http.Request
 	var HTTP_METHOD string
 	var err error
-	log.Println(the_url, method, params)
+	log.Infoln(the_url, method, params)
 	switch method {
 	case HTTP_GET:
 		HTTP_METHOD = "GET"
@@ -70,21 +70,7 @@ func httpCall(the_url string, method int, authorization string, params map[strin
 	if err != nil {
 		return nil, err
 	}
-	client := &http.Client{}
-	connectTimeout := time.Duration(15 * time.Second)
-	if proxyurl, ok := params["proxy"]; ok && proxyurl != "" {
-		proxy, err := url.Parse(proxyurl.(string))
-		if err != nil {
-			return nil, err
-		}
-		client.Transport = &http.Transport{
-			Dial: func(network, addr string) (net.Conn, error) {
-				return net.DialTimeout(network, addr, connectTimeout)
-			},
-			Proxy: http.ProxyURL(proxy),
-		}
-		// request.Header.Add("X-Forwarded-For", fmt.Sprintf("%v, 127.0.0.1, 192.168.0.1", proxyurl))
-	}
+
 	request.Header.Add("Accept-Encoding", "gzip")
 
 	switch method {
@@ -172,46 +158,6 @@ func read_body(response *http.Response) ([]byte, error) {
 	return nil, errors.New("Unknow Errors")
 }
 
-type HttpObject struct {
-	client *APIClient
-	method int
-}
-
-func (http *HttpObject) call(uri string, params map[string]interface{}, result interface{}) error {
-	body, err := http.raw(uri, params)
-	if err != nil {
-		return err
-	}
-	if len(body) == 0 {
-		return errors.New("Nothing Return From Http Requests!")
-	}
-	jsonbody, err := simplejson.NewJson(body)
-	if err != nil {
-		return err
-	}
-	_, ok := jsonbody.CheckGet("error_code")
-	if ok {
-		errcode, _ := jsonbody.Get("error_code").Int64()
-		errmessage, _ := jsonbody.Get("error").String()
-		err := &APIError{When: time.Now(), ErrorCode: errcode, Message: errmessage}
-		return err
-	}
-
-	if json.Unmarshal(body, result); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (http *HttpObject) raw(uri string, params map[string]interface{}) ([]byte, error) {
-	url := fmt.Sprintf("%s%s.json", http.client.api_url, uri)
-	body, err := httpCall(url, http.method, http.client.access_token, params)
-	if err != nil {
-		return nil, err
-	}
-	return body, nil
-}
-
 type APIClient struct {
 	app_key       string
 	app_secret    string
@@ -223,9 +169,46 @@ type APIClient struct {
 	version       string
 	access_token  string
 	expires       int64
-	get           *HttpObject
-	post          *HttpObject
-	upload        *HttpObject
+	Pool          *Pool
+}
+
+func (a *APIClient) call(base_url, uri, access_token, extension string, method int, params map[string]interface{}, result interface{}) error {
+	client, err := a.Pool.Get()
+	if err != nil {
+		log.Errorln(err)
+		return err
+	}
+	defer a.Pool.Put(client)
+
+	url := fmt.Sprintf("%s%s%s", base_url, uri, extension)
+	body, err := call(client.(*http.Client), url, method, access_token, params)
+	if err != nil {
+		log.Errorln(err)
+		return err
+	}
+	if len(body) == 0 {
+		return errors.New("Nothing Return From Http Requests!")
+	}
+
+	jsonbody, err := simplejson.NewJson(body)
+	if err != nil {
+		log.Errorln(string(body))
+		log.Errorln(err)
+		return err
+	}
+	_, ok := jsonbody.CheckGet("error_code")
+	if ok {
+		errcode, _ := jsonbody.Get("error_code").Int64()
+		errmessage, _ := jsonbody.Get("error").String()
+		err := &APIError{When: time.Now(), ErrorCode: errcode, Message: errmessage}
+		return err
+	}
+
+	if json.Unmarshal(body, result); err != nil {
+		log.Errorln(err)
+		return err
+	}
+	return nil
 }
 
 func (api *APIClient) is_expires() bool {
@@ -233,21 +216,39 @@ func (api *APIClient) is_expires() bool {
 }
 
 func NewAPIClient(app_key, app_secret, redirect_uri, response_type string) *APIClient {
-	api := &APIClient{
+
+	http_pool, err := NewConnPool(5, 10, func() (interface{}, error) {
+		return &http.Client{
+			Transport: &http.Transport{
+				Dial: func(network, addr string) (net.Conn, error) {
+					deadline := time.Now().Add(5 * time.Second)
+					conn, err := net.DialTimeout(network, addr, 5*time.Second)
+					if err != nil {
+						return nil, err
+					}
+					conn.SetDeadline(deadline)
+					return conn, nil
+				},
+				ResponseHeaderTimeout: 5 * time.Second,
+				// Proxy: http.ProxyURL(proxy),
+			},
+		}, nil
+	})
+	if err != nil {
+		return nil
+	}
+
+	return &APIClient{
 		app_key:       app_key,
 		app_secret:    app_secret,
 		redirect_uri:  redirect_uri,
 		response_type: response_type,
 		domain:        "api.weibo.com",
 		version:       "2",
+		Pool:          http_pool,
+		auth_url:      fmt.Sprintf("https://%s/oauth2/", "api.weibo.com"),
+		api_url:       fmt.Sprintf("https://%s/%s/", "api.weibo.com", "2"),
 	}
-
-	api.auth_url = fmt.Sprintf("https://%s/oauth2/", api.domain)
-	api.api_url = fmt.Sprintf("https://%s/%s/", api.domain, api.version)
-	api.get = &HttpObject{client: api, method: HTTP_GET}
-	api.post = &HttpObject{client: api, method: HTTP_POST}
-	api.upload = &HttpObject{client: api, method: HTTP_UPLOAD}
-	return api
 }
 
 func (api *APIClient) SetAccessToken(access_token string, expires int64) *APIClient {
@@ -275,31 +276,32 @@ func (api *APIClient) GetAuthorizeUrl(params map[string]interface{}) (string, er
 }
 
 func (api *APIClient) RequestAccessToken(code string, result interface{}) error {
-	the_url := fmt.Sprintf("%s%s", api.auth_url, "access_token")
-	params := map[string]interface{}{
-		"client_id":     api.app_key,
-		"client_secret": api.app_secret,
-		"redirect_uri":  api.redirect_uri,
-		"code":          code,
-		"grant_type":    "authorization_code",
-	}
-	return api.POST(the_url, params, result)
-}
-
-func (a *APIClient) Raw(uri string, params map[string]interface{}) ([]byte, error) {
-	return a.get.raw(uri, params)
+	api.SetAccessToken("", 0)
+	return api.Auth(fmt.Sprintf("%s%s", api.auth_url, "access_token"),
+		map[string]interface{}{
+			"client_id":     api.app_key,
+			"client_secret": api.app_secret,
+			"redirect_uri":  api.redirect_uri,
+			"code":          code,
+			"grant_type":    "authorization_code",
+		},
+		result)
 }
 
 func (a *APIClient) GET(uri string, params map[string]interface{}, result interface{}) error {
-	return a.get.call(uri, params, result)
+	return a.call(a.api_url, uri, ".json", a.access_token, HTTP_GET, params, result)
 }
 
 func (a *APIClient) POST(uri string, params map[string]interface{}, result interface{}) error {
-	return a.post.call(uri, params, result)
+	return a.call(a.api_url, uri, ".json", a.access_token, HTTP_POST, params, result)
+}
+
+func (a *APIClient) Auth(url string, params map[string]interface{}, result interface{}) error {
+	return a.call(url, "", "", a.access_token, HTTP_POST, params, result)
 }
 
 func (a *APIClient) UPLOAD(uri string, params map[string]interface{}, result interface{}) error {
-	return a.upload.call(uri, params, result)
+	return a.call(a.api_url, uri, ".json", a.access_token, HTTP_UPLOAD, params, result)
 }
 
 type APIError struct {

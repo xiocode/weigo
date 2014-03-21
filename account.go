@@ -7,25 +7,25 @@ package weigo
 
 //获取隐私设置信息
 func (api *APIClient) GET_account_privacy(params map[string]interface{}, result *Config) error {
-	return api.get.call("account/get_privacy", params, result)
+	return api.GET("account/get_privacy", params, result)
 }
 
 //获取所有学校列表
 func (api *APIClient) GET_account_profile_school_list(params map[string]interface{}, result *[]School) error {
-	return api.get.call("account/profile/school_list", params, result)
+	return api.GET("account/profile/school_list", params, result)
 }
 
 //获取当前用户API访问频率限制
 func (api *APIClient) GET_account_rate_limit_status(params map[string]interface{}, result *LimitStatus) error {
-	return api.get.call("account/rate_limit_status", params, result)
+	return api.GET("account/rate_limit_status", params, result)
 }
 
 //获取用户的联系邮箱 **高级**
 func (api *APIClient) GET_account_get_uid(params map[string]interface{}, uid *UserID) error {
-	return api.get.call("account/get_uid", params, uid)
+	return api.GET("account/get_uid", params, uid)
 }
 
 //OAuth授权之后获取用户UID
 func (api *APIClient) GET_account_get_email(params map[string]interface{}, email *Email) error {
-	return api.get.call("account/profile/email", params, email)
+	return api.GET("account/profile/email", params, email)
 }

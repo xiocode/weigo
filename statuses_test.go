@@ -13,8 +13,8 @@ type Times struct {
 
 func init() {
 	if api == nil {
-		api = NewAPIClient("3231340587", "702b4bcc6d56961f569943ecee1a76f4", "http://2.xweiboproxy.sinaapp.com/callback.php", "code")
-		api.SetAccessToken("2.00VBqgvCZS4gWDb3940dd56eFfitSB", 1529741330)
+		api = NewAPIClient("3231340587", "702b4bcc6d56961f569943ecee1a76f4", "https://api.weibo.com/oauth2/default.html", "token")
+		api.SetAccessToken("2.00VBqgvCZS4gWDb3940dd56eFfitSB", 1542004259)
 	}
 }
 

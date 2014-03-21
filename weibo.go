@@ -15,7 +15,7 @@ import (
 	"errors"
 	"fmt"
 	simplejson "github.com/bitly/go-simplejson"
-	log "github.com/golang/glog"
+	log "github.com/going/toolkit/log"
 	to "github.com/gosexy/to"
 	"io"
 	"io/ioutil"
@@ -43,7 +43,6 @@ func call(client *http.Client, the_url string, method int, authorization string,
 	var request *http.Request
 	var HTTP_METHOD string
 	var err error
-	log.Infoln(the_url, method, params)
 	switch method {
 	case HTTP_GET:
 		HTTP_METHOD = "GET"
@@ -172,10 +171,10 @@ type APIClient struct {
 	Pool          *Pool
 }
 
-func (a *APIClient) call(base_url, uri, access_token, extension string, method int, params map[string]interface{}, result interface{}) error {
+func (a *APIClient) call(base_url, uri, extension, access_token string, method int, params map[string]interface{}, result interface{}) error {
 	client, err := a.Pool.Get()
 	if err != nil {
-		log.Errorln(err)
+		log.Error(err)
 		return err
 	}
 	defer a.Pool.Put(client)
@@ -183,7 +182,7 @@ func (a *APIClient) call(base_url, uri, access_token, extension string, method i
 	url := fmt.Sprintf("%s%s%s", base_url, uri, extension)
 	body, err := call(client.(*http.Client), url, method, access_token, params)
 	if err != nil {
-		log.Errorln(err)
+		log.Error(err)
 		return err
 	}
 	if len(body) == 0 {
@@ -192,8 +191,7 @@ func (a *APIClient) call(base_url, uri, access_token, extension string, method i
 
 	jsonbody, err := simplejson.NewJson(body)
 	if err != nil {
-		log.Errorln(string(body))
-		log.Errorln(err)
+		log.Error(string(body), err)
 		return err
 	}
 	_, ok := jsonbody.CheckGet("error_code")
@@ -205,7 +203,7 @@ func (a *APIClient) call(base_url, uri, access_token, extension string, method i
 	}
 
 	if json.Unmarshal(body, result); err != nil {
-		log.Errorln(err)
+		log.Error(err)
 		return err
 	}
 	return nil
@@ -277,7 +275,7 @@ func (api *APIClient) GetAuthorizeUrl(params map[string]interface{}) (string, er
 
 func (api *APIClient) RequestAccessToken(code string, result interface{}) error {
 	api.SetAccessToken("", 0)
-	return api.Auth(fmt.Sprintf("%s%s", api.auth_url, "access_token"),
+	return api.Auth("access_token",
 		map[string]interface{}{
 			"client_id":     api.app_key,
 			"client_secret": api.app_secret,
@@ -296,8 +294,8 @@ func (a *APIClient) POST(uri string, params map[string]interface{}, result inter
 	return a.call(a.api_url, uri, ".json", a.access_token, HTTP_POST, params, result)
 }
 
-func (a *APIClient) Auth(url string, params map[string]interface{}, result interface{}) error {
-	return a.call(url, "", "", a.access_token, HTTP_POST, params, result)
+func (a *APIClient) Auth(uri string, params map[string]interface{}, result interface{}) error {
+	return a.call(api.auth_url, uri, "", a.access_token, HTTP_POST, params, result)
 }
 
 func (a *APIClient) UPLOAD(uri string, params map[string]interface{}, result interface{}) error {

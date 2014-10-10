@@ -15,8 +15,8 @@ import (
 	"errors"
 	"fmt"
 	simplejson "github.com/bitly/go-simplejson"
-	log "github.com/going/toolkit/log"
 	to "github.com/gosexy/to"
+	log "github.com/xiocode/glog"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
@@ -174,7 +174,7 @@ type APIClient struct {
 func (a *APIClient) call(base_url, uri, extension, access_token string, method int, params map[string]interface{}, result interface{}) error {
 	client, err := a.Pool.Get()
 	if err != nil {
-		log.Error(err)
+		log.Errorln(err)
 		return err
 	}
 	defer a.Pool.Put(client)
@@ -182,7 +182,7 @@ func (a *APIClient) call(base_url, uri, extension, access_token string, method i
 	url := fmt.Sprintf("%s%s%s", base_url, uri, extension)
 	body, err := call(client.(*http.Client), url, method, access_token, params)
 	if err != nil {
-		log.Error(err)
+		log.Errorln(err)
 		return err
 	}
 	if len(body) == 0 {
@@ -191,7 +191,7 @@ func (a *APIClient) call(base_url, uri, extension, access_token string, method i
 
 	jsonbody, err := simplejson.NewJson(body)
 	if err != nil {
-		log.Error(string(body), err)
+		log.Errorln(err)
 		return err
 	}
 	_, ok := jsonbody.CheckGet("error_code")
@@ -203,7 +203,7 @@ func (a *APIClient) call(base_url, uri, extension, access_token string, method i
 	}
 
 	if json.Unmarshal(body, result); err != nil {
-		log.Error(err)
+		log.Errorln(err)
 		return err
 	}
 	return nil

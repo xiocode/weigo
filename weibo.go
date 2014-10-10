@@ -295,7 +295,7 @@ func (a *APIClient) POST(uri string, params map[string]interface{}, result inter
 }
 
 func (a *APIClient) Auth(uri string, params map[string]interface{}, result interface{}) error {
-	return a.call(api.auth_url, uri, "", a.access_token, HTTP_POST, params, result)
+	return a.call(a.auth_url, uri, "", a.access_token, HTTP_POST, params, result)
 }
 
 func (a *APIClient) UPLOAD(uri string, params map[string]interface{}, result interface{}) error {

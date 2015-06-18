@@ -14,9 +14,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	simplejson "github.com/bitly/go-simplejson"
-	to "github.com/gosexy/to"
-	log "github.com/xiocode/glog"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
@@ -26,6 +23,10 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	simplejson "github.com/bitly/go-simplejson"
+	log "github.com/golang/glog"
+	to "github.com/gosexy/to"
 )
 
 const (

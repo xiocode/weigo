@@ -10,12 +10,11 @@ WIP 部分高级功能啥的还没有添加静态方法。。常用的都已经�
 
 ##Install:
 ```go
-go get -u github.com/xiocode/toolkit
 go get -u github.com/xiocode/weigo
 ```
 
 ##Usage:
-http://open.weibo.com/wiki/API%E6%96%87%E6%A1%A3_V2   
+http://open.weibo.com/wiki/API%E6%96%87%E6%A1%A3_V2
 参照官方文档调用对应的方法.目前weigo支持的功能可以参考本项目的[wiki](https://github.com/violetgo/weigo/wiki).
 ```go
 package weigo
